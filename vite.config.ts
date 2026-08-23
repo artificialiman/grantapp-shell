@@ -55,6 +55,27 @@ export default defineConfig({
 						sizes: '512x512',
 						type: 'image/png',
 						purpose: 'any'
+					},
+					{
+						src: '/icon-512-maskable.png',
+						sizes: '512x512',
+						type: 'image/png',
+						purpose: 'maskable'
+					}
+				],
+				screenshots: [
+					{
+						src: '/screenshot-wide.png',
+						sizes: '1280x800',
+						type: 'image/png',
+						form_factor: 'wide',
+						label: 'GrantApp AI home screen'
+					},
+					{
+						src: '/screenshot-narrow.png',
+						sizes: '750x1334',
+						type: 'image/png',
+						label: 'GrantApp AI home screen'
 					}
 				]
 			}
