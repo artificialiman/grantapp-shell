@@ -303,3 +303,20 @@ A science cluster page's root element gets `class="stream-context--science"`; ev
 - **`--surface-2`/`--border-2` don't exist in `index.html` or `premium-hub.html` at all.** They're real, used, and needed (dashboard nav's greeting chip, e.g.) — but two of four source pages simply didn't need a second surface level. Not a conflict, just confirms these are additive tokens for denser UI, not a universal requirement.
 - **The broken `@keyframes` in `premium-chemistry-hub.html`** (Section 2 note) — there's a component that was meant to animate in and the source is truncated. Worth checking your original draft/backup of that file if the entrance animation mattered.
 - **`premium-hub.html`'s fixed `50px` nav height** vs. the `1rem`-padding auto-height nav elsewhere — I defaulted to padding-based for consistency, but if the 50px was an intentional density constraint (e.g., to fit more above the fold on the premium dashboard), say so and I'll make dashboard nav height a fixed token instead.
+
+---
+
+## 6. Extension log
+
+**Paper progression states (added for the premium paper-unlock flow):** the
+original `.paper-status` system only distinguished `.status-live` (content
+published) / `.status-soon` (content not ready yet) — a content-readiness
+axis. Progression gating needed a second axis (a student's personal
+completion state per paper: locked / unlocked / in progress / completed).
+Rather than invent a parallel badge system, this reuses the existing one:
+- `locked` → `.status-soon` (as-is)
+- `completed` → `.status-live` (as-is — a completed paper genuinely is "live" for review)
+- `unlocked`, `in_progress` → two new modifiers, `.status-unlocked` /
+  `.status-progress`, built only from tokens already in Section 2
+  (`--accent`/`--accent-dim` and `--live`/`--live-dim` respectively) — no
+  new hex values introduced.

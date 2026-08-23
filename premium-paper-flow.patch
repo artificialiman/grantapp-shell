@@ -1,0 +1,649 @@
+diff --git a/DESIGN_SYSTEM.md b/DESIGN_SYSTEM.md
+index af3a0d6..65782c5 100644
+--- a/DESIGN_SYSTEM.md
++++ b/DESIGN_SYSTEM.md
+@@ -303,3 +303,20 @@ A science cluster page's root element gets `class="stream-context--science"`; ev
+ - **`--surface-2`/`--border-2` don't exist in `index.html` or `premium-hub.html` at all.** They're real, used, and needed (dashboard nav's greeting chip, e.g.) — but two of four source pages simply didn't need a second surface level. Not a conflict, just confirms these are additive tokens for denser UI, not a universal requirement.
+ - **The broken `@keyframes` in `premium-chemistry-hub.html`** (Section 2 note) — there's a component that was meant to animate in and the source is truncated. Worth checking your original draft/backup of that file if the entrance animation mattered.
+ - **`premium-hub.html`'s fixed `50px` nav height** vs. the `1rem`-padding auto-height nav elsewhere — I defaulted to padding-based for consistency, but if the 50px was an intentional density constraint (e.g., to fit more above the fold on the premium dashboard), say so and I'll make dashboard nav height a fixed token instead.
++
++---
++
++## 6. Extension log
++
++**Paper progression states (added for the premium paper-unlock flow):** the
++original `.paper-status` system only distinguished `.status-live` (content
++published) / `.status-soon` (content not ready yet) — a content-readiness
++axis. Progression gating needed a second axis (a student's personal
++completion state per paper: locked / unlocked / in progress / completed).
++Rather than invent a parallel badge system, this reuses the existing one:
++- `locked` → `.status-soon` (as-is)
++- `completed` → `.status-live` (as-is — a completed paper genuinely is "live" for review)
++- `unlocked`, `in_progress` → two new modifiers, `.status-unlocked` /
++  `.status-progress`, built only from tokens already in Section 2
++  (`--accent`/`--accent-dim` and `--live`/`--live-dim` respectively) — no
++  new hex values introduced.
+diff --git a/src/app.css b/src/app.css
+index f67145c..2a9947b 100644
+--- a/src/app.css
++++ b/src/app.css
+@@ -673,6 +673,15 @@ nav.nav-dashboard .brand { font-size: 1.1rem; }
+ .status-live { background: var(--green-dim); color: var(--green); border: 1px solid rgba(16,185,129,0.25); }
+ .status-soon { background: var(--surface-2); color: var(--muted); border: 1px solid var(--border); }
+ 
++/* Paper progression extends this system with two states live/soon didn't
++   need to cover: "unlocked, not yet started" and "in progress". Locked
++   reuses .status-soon as-is; completed reuses .status-live as-is (a
++   completed paper is exactly "live/available" for review) — only these
++   two are genuinely new, and both are built from existing tokens, no new
++   hex values. See DESIGN_SYSTEM.md Section 6. */
++.status-unlocked { background: var(--accent-dim); color: var(--accent); border: 1px solid rgba(245,158,11,0.3); }
++.status-progress { background: var(--live-dim); color: var(--live); border: 1px solid rgba(74,222,128,0.18); }
++
+ .badge {
+ 	font-family: var(--font-mono);
+ 	font-size: 0.52rem;
+diff --git a/src/lib/components/MaterialCard.svelte b/src/lib/components/MaterialCard.svelte
+new file mode 100644
+index 0000000..365b0b8
+--- /dev/null
++++ b/src/lib/components/MaterialCard.svelte
+@@ -0,0 +1,27 @@
++<script lang="ts">
++	/** Reuses .notes-card exactly (icon / label / title / sub / arrow) —
++	    see app.css "Notes / callout card" block. No new component CSS. */
++	export let title: string; // COPY: IMAN
++	export let type: string = 'factfile';
++	export let href: string = '#';
++	export let sizeLabel: string = '';
++
++	const ICON: Record<string, string> = {
++		factfile: '📄',
++		'formula-sheet': '∑',
++		'diagram-sheet': '📐',
++		'topic-summary': '📝'
++	};
++</script>
++
++<a {href} class="notes-card" target="_blank" rel="noopener">
++	<div class="notes-icon">{ICON[type] ?? '📄'}</div>
++	<div class="notes-info">
++		<div class="notes-label">{type.replace('-', ' ')}</div>
++		<div class="notes-title">{title}</div>
++		{#if sizeLabel}
++			<div class="notes-sub">{sizeLabel}</div>
++		{/if}
++	</div>
++	<div class="notes-arrow">↓</div>
++</a>
+diff --git a/src/lib/components/PaperCard.svelte b/src/lib/components/PaperCard.svelte
+new file mode 100644
+index 0000000..1ae74c0
+--- /dev/null
++++ b/src/lib/components/PaperCard.svelte
+@@ -0,0 +1,61 @@
++<script lang="ts">
++	import type { PaperStatus } from '$lib/content/subjects';
++
++	export let number: number;
++	export let status: PaperStatus;
++	export let answeredCount: number = 0;
++	export let score: number | null = null;
++	export let href: string = '#';
++
++	$: locked = status === 'locked';
++
++	/** Card modifier reuses the existing two-state system: locked → .coming,
++	    everything actionable → .live. See app.css .paper-card rules. */
++	$: cardClass = locked ? 'coming' : 'live';
++
++	/** Badge modifier — see DESIGN_SYSTEM.md Section 6 for which of these
++	    are new vs. reused as-is. */
++	$: badgeClass =
++		status === 'completed'
++			? 'status-live'
++			: status === 'in_progress'
++				? 'status-progress'
++				: status === 'unlocked'
++					? 'status-unlocked'
++					: 'status-soon';
++
++	$: badgeLabel = status.replace('_', ' ');
++
++	$: detail =
++		status === 'completed' && score !== null
++			? `${score}/50 · reviewed`
++			: status === 'in_progress'
++				? `${answeredCount}/50 answered`
++				: status === 'unlocked'
++					? '50 questions'
++					: `Complete Paper ${number - 1} to unlock`;
++</script>
++
++{#if locked}
++	<div class="paper-card {cardClass}" aria-disabled="true">
++		<div class="paper-top">
++			<span class="paper-num">{String(number).padStart(2, '0')}</span>
++			<span class="paper-status {badgeClass}">{badgeLabel}</span>
++		</div>
++		<div class="paper-meta">
++			<span class="paper-name">Paper {number}</span>
++			<span class="paper-detail">{detail}</span>
++		</div>
++	</div>
++{:else}
++	<a {href} class="paper-card {cardClass}">
++		<div class="paper-top">
++			<span class="paper-num">{String(number).padStart(2, '0')}</span>
++			<span class="paper-status {badgeClass}">{badgeLabel}</span>
++		</div>
++		<div class="paper-meta">
++			<span class="paper-name">Paper {number}</span>
++			<span class="paper-detail">{detail}</span>
++		</div>
++	</a>
++{/if}
+diff --git a/src/lib/content/subjects.ts b/src/lib/content/subjects.ts
+new file mode 100644
+index 0000000..9baa1a2
+--- /dev/null
++++ b/src/lib/content/subjects.ts
+@@ -0,0 +1,58 @@
++/**
++ * Subject metadata, question shape, and study-material shape shared across
++ * the premium paper flow. Content ownership: `prompt`, `options`,
++ * `explanation`, diagram `alt`, and material `title` are IMAN's copy —
++ * agents populate structure only, never invented English. See
++ * CONTENT_OWNERSHIP.md Section 1.
++ */
++
++export type Stream = 'science' | 'arts' | 'commerce';
++
++/** Which stream a premium subject belongs to — drives --accent via .stream-context--*. */
++export const SUBJECT_STREAM: Record<string, Stream> = {
++	biology: 'science',
++	chemistry: 'science',
++	physics: 'science',
++	mathematics: 'science',
++	english: 'arts',
++	history: 'arts',
++	geography: 'arts',
++	accounting: 'commerce',
++	economics: 'commerce',
++	commerce: 'commerce'
++};
++
++export function streamFor(subject: string): Stream {
++	return SUBJECT_STREAM[subject] ?? 'science';
++}
++
++export type Question = {
++	id: string;
++	paper: number; // 1–10
++	index: number; // 1–50 within that paper
++	prompt: string; // COPY: IMAN
++	diagram?: {
++		src: string; // e.g. /content/{subject}/diagrams/q0142.svg
++		alt: string; // COPY: IMAN
++	};
++	options: string[]; // COPY: IMAN
++	correctIndex: number;
++	explanation?: string; // COPY: IMAN
++};
++
++export type StudyMaterial = {
++	id: string;
++	title: string; // COPY: IMAN
++	type: 'factfile' | 'formula-sheet' | 'diagram-sheet' | 'topic-summary';
++	src: string; // e.g. /content/{subject}/materials/factfile-01.pdf
++	sizeLabel?: string; // computed, not authored
++};
++
++export type PaperStatus = 'locked' | 'unlocked' | 'in_progress' | 'completed';
++
++export type PaperSummary = {
++	number: number; // 1–10
++	status: PaperStatus;
++	answeredCount: number; // 0–50
++	score: number | null; // null until completed
++};
+diff --git a/src/routes/api/submit-paper/+server.ts b/src/routes/api/submit-paper/+server.ts
+new file mode 100644
+index 0000000..4479676
+--- /dev/null
++++ b/src/routes/api/submit-paper/+server.ts
+@@ -0,0 +1,89 @@
++import { json } from '@sveltejs/kit';
++import type { RequestHandler } from './$types';
++
++const SERVICE_ROLE_KEY = process.env.SERVICE_ROLE_KEY;
++
++/**
++ * Records paper progress and, only on full completion (50/50 answered),
++ * unlocks the next paper. This is the one place progression state is
++ * written — mirrors the service_role-only write pattern in
++ * api/bind-device/+server.ts. The client never writes paper_progress directly.
++ */
++export const POST: RequestHandler = async ({ request, locals }) => {
++	try {
++		const session = await locals.getSession();
++		if (!session?.user?.id) {
++			return json({ message: 'Unauthorized' }, { status: 401 });
++		}
++
++		const { subject, paper_number, answered_count, score } = (await request.json()) as {
++			subject: string;
++			paper_number: number;
++			answered_count: number;
++			score?: number;
++		};
++
++		if (!subject || !paper_number || answered_count == null) {
++			return json({ message: 'Missing required fields' }, { status: 400 });
++		}
++
++		if (!SERVICE_ROLE_KEY) {
++			console.error('SERVICE_ROLE_KEY not configured');
++			return json({ message: 'Server configuration error' }, { status: 500 });
++		}
++
++		const { createClient } = await import('@supabase/supabase-js');
++		const supabaseUrl = process.env.VITE_SUPABASE_URL;
++
++		if (!supabaseUrl) {
++			return json({ message: 'Server configuration error' }, { status: 500 });
++		}
++
++		const adminClient = createClient(supabaseUrl, SERVICE_ROLE_KEY);
++
++		const isComplete = answered_count >= 50;
++		const status = isComplete ? 'completed' : 'in_progress';
++
++		const { error: upsertError } = await adminClient.from('paper_progress').upsert(
++			{
++				student_id: session.user.id,
++				subject,
++				paper_number,
++				status,
++				answered_count,
++				score: isComplete ? (score ?? null) : null,
++				started_at: new Date().toISOString(),
++				completed_at: isComplete ? new Date().toISOString() : null,
++				updated_at: new Date().toISOString()
++			},
++			{ onConflict: 'student_id,subject,paper_number' }
++		);
++
++		if (upsertError) {
++			console.error('Error upserting paper progress:', upsertError);
++			return json({ message: 'Failed to save progress' }, { status: 500 });
++		}
++
++		// Ensure the next paper has an explicit "unlocked" row the moment this
++		// one completes, rather than relying only on the hub's on-the-fly
++		// derivation — keeps a direct URL hit on the next paper consistent too.
++		if (isComplete && paper_number < 10) {
++			await adminClient.from('paper_progress').upsert(
++				{
++					student_id: session.user.id,
++					subject,
++					paper_number: paper_number + 1,
++					status: 'unlocked',
++					answered_count: 0,
++					updated_at: new Date().toISOString()
++				},
++				{ onConflict: 'student_id,subject,paper_number', ignoreDuplicates: true }
++			);
++		}
++
++		return json({ message: 'Progress saved', status }, { status: 200 });
++	} catch (err) {
++		console.error('Submit paper error:', err);
++		return json({ message: 'Internal server error' }, { status: 500 });
++	}
++};
+diff --git a/src/routes/premium/[subject]/+page.server.ts b/src/routes/premium/[subject]/+page.server.ts
+new file mode 100644
+index 0000000..fdbbf92
+--- /dev/null
++++ b/src/routes/premium/[subject]/+page.server.ts
+@@ -0,0 +1,58 @@
++import { redirect } from '@sveltejs/kit';
++import type { PageServerLoad } from './$types';
++import { client } from '$lib/supabase';
++import type { PaperSummary, PaperStatus } from '$lib/content/subjects';
++
++const TOTAL_PAPERS = 10;
++
++export const load: PageServerLoad = async ({ params, locals }) => {
++	const session = await locals.getSession();
++	if (!session?.user?.id) {
++		throw redirect(303, '/login');
++	}
++
++	const subject = params.subject;
++
++	const { data: rows, error } = await client
++		.from('paper_progress')
++		.select('paper_number, status, answered_count, score')
++		.eq('student_id', session.user.id)
++		.eq('subject', subject);
++
++	if (error) {
++		console.error('Error loading paper progress:', error);
++	}
++
++	const byNumber = new Map((rows ?? []).map((r) => [r.paper_number, r]));
++
++	// Papers with no row yet are implicitly locked, except Paper 1, which is
++	// always open — a student's first attempt at any subject creates no row
++	// until they actually start it (see submit-paper endpoint).
++	const papers: PaperSummary[] = Array.from({ length: TOTAL_PAPERS }, (_, i) => {
++		const number = i + 1;
++		const row = byNumber.get(number);
++
++		if (row) {
++			return {
++				number,
++				status: row.status as PaperStatus,
++				answeredCount: row.answered_count,
++				score: row.score
++			};
++		}
++
++		const previousCompleted = number === 1 || byNumber.get(number - 1)?.status === 'completed';
++		return {
++			number,
++			status: (previousCompleted ? 'unlocked' : 'locked') as PaperStatus,
++			answeredCount: 0,
++			score: null
++		};
++	});
++
++	// TODO: replace with real material listing once Section 2 materials
++	// pipeline exists — loader.ts placeholder mirrors question-bank pattern.
++	const materials: { id: string; title: string; type: string; src: string }[] = [];
++
++	return { subject, papers, materials };
++};
+diff --git a/src/routes/premium/[subject]/+page.svelte b/src/routes/premium/[subject]/+page.svelte
+index 1052885..541a415 100644
+--- a/src/routes/premium/[subject]/+page.svelte
++++ b/src/routes/premium/[subject]/+page.svelte
+@@ -1,27 +1,79 @@
+ <script lang="ts">
+-	import { page } from '$app/stores';
+-	import QuizShell from '$lib/components/QuizShell.svelte';
++	import PaperCard from '$lib/components/PaperCard.svelte';
++	import MaterialCard from '$lib/components/MaterialCard.svelte';
++	import { streamFor } from '$lib/content/subjects';
++	import type { PageData } from './$types';
+ 
+-	$: subjectName = $page.params.subject || 'Subject';
+-	$: subjectLabel = subjectName.charAt(0).toUpperCase() + subjectName.slice(1);
++	export let data: PageData;
++
++	$: subjectLabel = data.subject.charAt(0).toUpperCase() + data.subject.slice(1);
++	$: stream = streamFor(data.subject);
++	$: completedCount = data.papers.filter((p) => p.status === 'completed').length;
+ </script>
+ 
+-<div class="wrap">
++<div class="stream-context--{stream} wrap">
+ 	<div class="breadcrumb">
+ 		<a href="/premium">Premium</a><span class="sep">/</span><span class="current">{subjectLabel}</span>
+ 	</div>
+ 
+ 	<h1 class="page-title">{subjectLabel}</h1>
+-	<p class="page-intro">Premium papers and practice questions</p>
++	<p class="page-intro">
++		<!-- COPY NEEDED: subject hub intro line -->
++		500 likely questions, 10 papers of 50, unlocked one completed paper at a time.
++	</p>
++
++	<div class="stats-bar">
++		<div class="stat">
++			<div class="stat-num">{completedCount}/10</div>
++			<div class="stat-label">Papers done</div>
++		</div>
++		<div class="stat">
++			<div class="stat-num">500</div>
++			<div class="stat-label">Questions</div>
++		</div>
++		<div class="stat">
++			<div class="stat-num">{data.materials.length}</div>
++			<div class="stat-label">Study files</div>
++		</div>
++	</div>
++
++	<div class="section-header">
++		<span class="section-title">Papers</span>
++		<span class="section-count">{data.papers.length} sets</span>
++	</div>
++	<div class="paper-grid">
++		{#each data.papers as paper}
++			<PaperCard
++				number={paper.number}
++				status={paper.status}
++				answeredCount={paper.answeredCount}
++				score={paper.score}
++				href="/premium/{data.subject}/paper/{paper.number}"
++			/>
++		{/each}
++	</div>
+ 
+-	<QuizShell subject={subjectLabel} questionCount={0} />
++	<div class="section-header">
++		<span class="section-title">Study materials</span>
++		<span class="section-count">{data.materials.length} files</span>
++	</div>
++	{#if data.materials.length}
++		<div class="material-list">
++			{#each data.materials as material}
++				<MaterialCard title={material.title} type={material.type} href={material.src} />
++			{/each}
++		</div>
++	{:else}
++		<!-- COPY NEEDED: empty-state copy for a subject with no materials uploaded yet -->
++		<p class="empty-state">Study materials for this subject are on the way.</p>
++	{/if}
+ </div>
+ 
+ <style>
+ 	.wrap {
+-		max-width: 900px;
++		max-width: 960px;
+ 		margin: 0 auto;
+-		padding: 2rem 2rem 5rem;
++		padding: 2.5rem 2rem 5rem;
+ 	}
+ 
+ 	.page-title {
+@@ -33,5 +85,24 @@
+ 	.page-intro {
+ 		color: var(--muted);
+ 		margin-bottom: 2rem;
++		max-width: 560px;
++		line-height: 1.6;
++	}
++
++	/* .stats-bar, .section-header, .paper-grid are all global (app.css) —
++	   only the material list needs a local layout rule, since app.css has
++	   no existing "stack of notes-cards" pattern to reuse. */
++	.material-list {
++		display: flex;
++		flex-direction: column;
++		gap: 0.75rem;
++		margin-bottom: 3rem;
++	}
++
++	.empty-state {
++		color: var(--muted);
++		font-size: 0.9rem;
++		font-style: italic;
++		margin-bottom: 3rem;
+ 	}
+ </style>
+diff --git a/src/routes/premium/[subject]/paper/[n]/+page.server.ts b/src/routes/premium/[subject]/paper/[n]/+page.server.ts
+new file mode 100644
+index 0000000..5ecb08b
+--- /dev/null
++++ b/src/routes/premium/[subject]/paper/[n]/+page.server.ts
+@@ -0,0 +1,56 @@
++import { error, redirect } from '@sveltejs/kit';
++import type { PageServerLoad } from './$types';
++import { client } from '$lib/supabase';
++
++export const load: PageServerLoad = async ({ params, locals }) => {
++	const session = await locals.getSession();
++	if (!session?.user?.id) {
++		throw redirect(303, '/login');
++	}
++
++	const subject = params.subject;
++	const paperNumber = Number(params.n);
++
++	if (!Number.isInteger(paperNumber) || paperNumber < 1 || paperNumber > 10) {
++		throw error(404, 'Paper not found');
++	}
++
++	// Paper 1 is always reachable. Every other paper needs the previous one
++	// marked completed server-side — this check must live here, not just in
++	// the hub UI, or a student could hit the URL directly and skip the gate.
++	if (paperNumber > 1) {
++		const { data: previous } = await client
++			.from('paper_progress')
++			.select('status')
++			.eq('student_id', session.user.id)
++			.eq('subject', subject)
++			.eq('paper_number', paperNumber - 1)
++			.maybeSingle();
++
++		if (previous?.status !== 'completed') {
++			throw redirect(303, `/premium/${subject}`);
++		}
++	}
++
++	const { data: current } = await client
++		.from('paper_progress')
++		.select('status, answered_count, score')
++		.eq('student_id', session.user.id)
++		.eq('subject', subject)
++		.eq('paper_number', paperNumber)
++		.maybeSingle();
++
++	// TODO: swap for the real question-bank loader once Section 2's content
++	// pipeline lands (loadQuestionContent in lib/content/loader.ts).
++	// Diagrams travel inside each question per subjects.ts's Question type.
++	const questions: unknown[] = [];
++
++	return {
++		subject,
++		paperNumber,
++		status: current?.status ?? 'unlocked',
++		answeredCount: current?.answered_count ?? 0,
++		score: current?.score ?? null,
++		questions
++	};
++};
+diff --git a/src/routes/premium/[subject]/paper/[n]/+page.svelte b/src/routes/premium/[subject]/paper/[n]/+page.svelte
+new file mode 100644
+index 0000000..9d159c7
+--- /dev/null
++++ b/src/routes/premium/[subject]/paper/[n]/+page.svelte
+@@ -0,0 +1,53 @@
++<script lang="ts">
++	import QuizShell from '$lib/components/QuizShell.svelte';
++	import { streamFor } from '$lib/content/subjects';
++	import type { PageData } from './$types';
++
++	export let data: PageData;
++
++	$: subjectLabel = data.subject.charAt(0).toUpperCase() + data.subject.slice(1);
++	$: stream = streamFor(data.subject);
++</script>
++
++<div class="stream-context--{stream} wrap">
++	<div class="breadcrumb">
++		<a href="/premium">Premium</a><span class="sep">/</span>
++		<a href="/premium/{data.subject}">{subjectLabel}</a><span class="sep">/</span>
++		<span class="current">Paper {data.paperNumber}</span>
++	</div>
++
++	<h1 class="page-title">{subjectLabel} · Paper {data.paperNumber}</h1>
++	<p class="page-intro">
++		<!-- COPY NEEDED: paper intro line, e.g. instructions or scoring note -->
++		50 questions. Progress saves automatically as you answer.
++	</p>
++
++	<!--
++		QuizShell currently renders a placeholder. It needs to become the real
++		question-by-question runner: one Question at a time (see
++		lib/content/subjects.ts — diagram lives inline on the question), a
++		progress indicator, and a call to /api/submit-paper as answers are
++		recorded and again on final submit. That's an interaction-design pass
++		of its own, separate from this routing/gating skeleton.
++	-->
++	<QuizShell subject={subjectLabel} questionCount={data.questions.length} />
++</div>
++
++<style>
++	.wrap {
++		max-width: 900px;
++		margin: 0 auto;
++		padding: 2rem 2rem 5rem;
++	}
++
++	.page-title {
++		font-size: clamp(1.75rem, 4vw, 2.25rem);
++		letter-spacing: -0.03em;
++		margin: 1rem 0 0.4rem;
++	}
++
++	.page-intro {
++		color: var(--muted);
++		margin-bottom: 2rem;
++	}
++</style>
+diff --git a/supabase/migrations/0002_paper_progress.sql b/supabase/migrations/0002_paper_progress.sql
+new file mode 100644
+index 0000000..c5c500c
+--- /dev/null
++++ b/supabase/migrations/0002_paper_progress.sql
+@@ -0,0 +1,36 @@
++-- GrantApp Shell - Database Schema
++-- Phase 2: Premium paper progression (full-completion gate)
++--
++-- Each subject has 10 papers of 50 questions. A paper unlocks only once
++-- the previous paper in that subject has been fully completed (all 50
++-- answered and submitted) — see ANTITHEFT_DOCTRINE_V1 / CONTENT_OWNERSHIP.md
++-- for why this is a server-truth gate, not client state.
++
++create table public.paper_progress (
++  id bigint generated always as identity primary key,
++  student_id uuid not null references public.students(id) on delete cascade,
++  subject text not null,
++  paper_number smallint not null check (paper_number between 1 and 10),
++  status text not null default 'unlocked' check (status in ('locked', 'unlocked', 'in_progress', 'completed')),
++  answered_count smallint not null default 0 check (answered_count between 0 and 50),
++  score smallint,                          -- null until completed
++  started_at timestamptz,
++  completed_at timestamptz,
++  updated_at timestamptz not null default now(),
++  unique (student_id, subject, paper_number)
++);
++
++-- Enable Row Level Security
++alter table public.paper_progress enable row level security;
++
++-- A student can read their own progress rows only.
++create policy "students read own paper progress"
++  on public.paper_progress for select
++  using (auth.uid() = student_id);
++
++-- Progress rows are written ONLY via the server-side submit-paper endpoint,
++-- which uses the service_role key. No insert/update/delete policy is granted
++-- to the authenticated role — same pattern as device_bindings in 0001_init.sql.
++
++-- Indexes for the common "give me this student's paper grid for a subject" query
++create index idx_paper_progress_student_subject on public.paper_progress(student_id, subject);

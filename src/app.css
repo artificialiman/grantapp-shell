@@ -673,6 +673,15 @@ nav.nav-dashboard .brand { font-size: 1.1rem; }
 .status-live { background: var(--green-dim); color: var(--green); border: 1px solid rgba(16,185,129,0.25); }
 .status-soon { background: var(--surface-2); color: var(--muted); border: 1px solid var(--border); }
 
+/* Paper progression extends this system with two states live/soon didn't
+   need to cover: "unlocked, not yet started" and "in progress". Locked
+   reuses .status-soon as-is; completed reuses .status-live as-is (a
+   completed paper is exactly "live/available" for review) — only these
+   two are genuinely new, and both are built from existing tokens, no new
+   hex values. See DESIGN_SYSTEM.md Section 6. */
+.status-unlocked { background: var(--accent-dim); color: var(--accent); border: 1px solid rgba(245,158,11,0.3); }
+.status-progress { background: var(--live-dim); color: var(--live); border: 1px solid rgba(74,222,128,0.18); }
+
 .badge {
 	font-family: var(--font-mono);
 	font-size: 0.52rem;
