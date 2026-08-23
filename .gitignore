@@ -2,6 +2,9 @@
 /node_modules
 /build
 /.svelte-kit
+/.vercel
+/.netlify
+/.wrangler
 /package-lock.json
 .env
 .env.local
