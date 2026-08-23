@@ -94,11 +94,14 @@
 
 <div class="login-container">
 	<div class="login-card">
+		<div class="hero-eyebrow">GrantApp AI</div>
 		<h1>{showSignUp ? 'Sign Up' : 'Sign In'}</h1>
 
 		{#if error}
-			<div class="alert" class:error={!showSignUp || !error.includes('successful')}>
-				{error}
+			<div class="error-banner" class:success={error.includes('successful')}>
+				<div class="error-content">
+					<p>{error}</p>
+				</div>
 			</div>
 		{/if}
 
@@ -127,7 +130,7 @@
 				/>
 			</div>
 
-			<button type="submit" class="primary" {disabled: loading}>
+			<button type="submit" class="btn btn-primary btn-full" disabled={loading}>
 				{loading ? 'Loading...' : showSignUp ? 'Sign Up' : 'Sign In'}
 			</button>
 		</form>
@@ -167,46 +170,48 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		min-height: 60vh;
+		min-height: 70vh;
 		padding: 2rem 1rem;
 	}
 
 	.login-card {
 		width: 100%;
 		max-width: 400px;
-		padding: 2rem;
-		border: 1px solid #e0e0e0;
-		border-radius: 8px;
-		background-color: #fff;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+		padding: 2.5rem;
+		border: 1px solid var(--border);
+		border-radius: var(--radius-card);
+		background: var(--surface);
+	}
+
+	.hero-eyebrow {
+		text-align: center;
+		margin-bottom: 0.5rem;
 	}
 
 	h1 {
 		margin-top: 0;
-		text-align: center;
-		color: #333;
-		font-size: 1.75rem;
-	}
-
-	.alert {
-		padding: 1rem;
 		margin-bottom: 1.5rem;
-		border-radius: 6px;
-		background-color: #d4edda;
-		color: #155724;
-		border: 1px solid #c3e6cb;
+		text-align: center;
+		font-size: 1.6rem;
 	}
 
-	.alert.error {
-		background-color: #f8d7da;
-		color: #721c24;
-		border-color: #f5c6cb;
+	.error-banner {
+		margin-bottom: 1.5rem;
+	}
+
+	.error-banner.success {
+		background: var(--green-dim);
+		border-color: rgba(16, 185, 129, 0.3);
+	}
+
+	.error-banner.success .error-content {
+		color: var(--green);
 	}
 
 	form {
 		display: flex;
 		flex-direction: column;
-		gap: 1.5rem;
+		gap: 1.25rem;
 	}
 
 	.form-group {
@@ -216,48 +221,27 @@
 	}
 
 	label {
-		font-weight: 600;
-		color: #333;
-		font-size: 0.875rem;
-	}
-
-	input {
-		padding: 0.75rem;
-		border: 1px solid #ddd;
-		border-radius: 6px;
-		font-size: 1rem;
-		transition: border-color 0.2s ease;
-	}
-
-	input:focus {
-		outline: none;
-		border-color: #007bff;
-		box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+		font-family: var(--font-mono);
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+		color: var(--muted);
+		font-size: 0.7rem;
 	}
 
 	input:disabled {
-		background-color: #f5f5f5;
+		opacity: 0.6;
 		cursor: not-allowed;
 	}
 
-	button.primary {
+	.btn-full {
 		width: 100%;
+		justify-content: center;
 		padding: 0.75rem;
-		background-color: #007bff;
-		color: white;
-		border: none;
-		border-radius: 6px;
-		font-weight: 600;
-		cursor: pointer;
-		transition: background-color 0.2s ease;
 	}
 
-	button.primary:hover:not(:disabled) {
-		background-color: #0056b3;
-	}
-
-	button.primary:disabled {
-		background-color: #6c757d;
+	.btn-full:disabled {
+		background: var(--surface-2);
+		color: var(--muted);
 		cursor: not-allowed;
 	}
 
@@ -268,38 +252,36 @@
 
 	.toggle p {
 		margin: 0;
-		font-size: 0.875rem;
-		color: #666;
+		font-size: 0.85rem;
+		color: var(--muted);
 	}
 
 	.toggle button {
 		background: none;
 		border: none;
-		color: #007bff;
+		color: var(--accent);
 		cursor: pointer;
 		font-weight: 600;
-		text-decoration: underline;
 		padding: 0;
 	}
 
 	.toggle button:hover {
-		color: #0056b3;
+		opacity: 0.85;
 	}
 
 	.back-link {
 		text-align: center;
 		margin-top: 1.5rem;
 		padding-top: 1.5rem;
-		border-top: 1px solid #e0e0e0;
+		border-top: 1px solid var(--border);
 	}
 
 	.back-link a {
-		color: #666;
-		font-size: 0.875rem;
+		color: var(--muted);
+		font-size: 0.85rem;
 	}
 
 	.back-link a:hover {
-		color: #007bff;
-		text-decoration: underline;
+		color: var(--accent);
 	}
 </style>

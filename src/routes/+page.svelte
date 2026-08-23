@@ -5,98 +5,69 @@
 	export let data: PageData;
 </script>
 
-<div class="home">
-	<section class="hero">
-		<h1>Welcome to GrantApp</h1>
-		<p>Premium exam preparation for Nigerian secondary schools</p>
-	</section>
+<section class="hero">
+	<div class="hero-eyebrow">UTME &middot; Post-UTME &middot; WAEC prep</div>
+	<h1>Prepare like you're <em>already in</em>.</h1>
+	<p class="hero-sub">
+		10,000 questions a subject, a personalised daily 100, and full papers that work offline —
+		built for Nigerian secondary school students chasing the CGPA that gets them in.
+	</p>
+</section>
 
-	<section class="streams">
-		<h2>Choose Your Stream</h2>
-		<div class="grid">
-			<SubjectCard title="Science" description="Biology, Chemistry, Physics" href="/science" icon="🔬" />
-			<SubjectCard title="Arts" description="English, History, Geography" href="/arts" icon="📖" />
-			<SubjectCard title="Commercial" description="Accounting, Economics, Commerce" href="/commercial" icon="💼" />
-		</div>
-	</section>
+<section class="streams">
+	<SubjectCard
+		stream="science"
+		icon="🔬"
+		tag="Science"
+		title="Science Stream"
+		description="Biology, Chemistry, Physics — the core cluster for medicine, engineering, and every technical course."
+		subjects={['Biology', 'Chemistry', 'Physics']}
+		href="/science"
+	/>
+	<SubjectCard
+		stream="arts"
+		icon="📖"
+		tag="Arts"
+		title="Arts Stream"
+		description="English, History, Geography — humanities preparation for law, mass comm, and the social sciences."
+		subjects={['English', 'History', 'Geography']}
+		href="/arts"
+	/>
+	<SubjectCard
+		stream="commerce"
+		icon="💼"
+		tag="Commercial"
+		title="Commercial Stream"
+		description="Accounting, Economics, Commerce — for business, finance, and management courses."
+		subjects={['Accounting', 'Economics', 'Commerce']}
+		href="/commercial"
+	/>
+</section>
 
-	{#if data.user}
-		<section class="premium-cta">
-			<h2>Premium Access</h2>
-			{#if data.student?.subscription_active}
-				<p>You have premium access. <a href="/premium">View premium content</a></p>
-			{:else}
-				<p>Unlock premium papers and features. <a href="/login">Subscribe now</a></p>
-			{/if}
-		</section>
-	{/if}
-</div>
+{#if data.user}
+	<div class="wrap">
+		<a href={data.student?.subscription_active ? '/premium' : '/login'} class="notes-card">
+			<div class="notes-icon">⭐</div>
+			<div class="notes-info">
+				<div class="notes-label">Premium</div>
+				<div class="notes-title">
+					{data.student?.subscription_active ? 'You have premium access' : 'Unlock premium papers'}
+				</div>
+				<div class="notes-sub">
+					{data.student?.subscription_active
+						? 'View your premium papers and mock exams'
+						: 'Full past papers, no negative marking, offline-ready'}
+				</div>
+			</div>
+			<div class="notes-arrow">→</div>
+		</a>
+	</div>
+{/if}
 
 <style>
-	.home {
-		max-width: 1200px;
+	.wrap {
+		max-width: 1000px;
 		margin: 0 auto;
-	}
-
-	.hero {
-		text-align: center;
-		padding: 3rem 1rem;
-		background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
-		color: white;
-		border-radius: 8px;
-		margin-bottom: 2rem;
-	}
-
-	.hero h1 {
-		font-size: 2.5rem;
-		margin-bottom: 0.5rem;
-	}
-
-	.hero p {
-		font-size: 1.25rem;
-		margin: 0;
-	}
-
-	.streams {
-		margin-bottom: 3rem;
-	}
-
-	.streams h2 {
-		font-size: 1.75rem;
-		margin-bottom: 1.5rem;
-		color: #333;
-	}
-
-	.grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-		gap: 1.5rem;
-	}
-
-	.premium-cta {
-		padding: 2rem;
-		background-color: #f0f8ff;
-		border: 2px solid #007bff;
-		border-radius: 8px;
-		text-align: center;
-	}
-
-	.premium-cta h2 {
-		color: #0056b3;
-		margin-top: 0;
-	}
-
-	@media (max-width: 768px) {
-		.hero h1 {
-			font-size: 1.75rem;
-		}
-
-		.hero p {
-			font-size: 1rem;
-		}
-
-		.grid {
-			grid-template-columns: 1fr;
-		}
+		padding: 0 2rem 5rem;
 	}
 </style>

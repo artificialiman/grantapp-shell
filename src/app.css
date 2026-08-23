@@ -1,40 +1,101 @@
+/* ============================================================
+   GrantApp AI — Design Tokens & Component Library
+   Canonical, reconciled from FOUR independently-authored inline
+   <style> blocks on the live site (index.html, science_clusters.html,
+   premium-hub.html, premium-chemistry-hub.html) — see
+   /DESIGN_SYSTEM.md at the repo root for the full reconciliation
+   notes on what varied, what was merged, and what's still open.
+   Do not hand-edit tokens here without updating that doc too.
+   ============================================================ */
+
+/* Self-hosted via @fontsource (npm), not CDN-linked — required for
+   the offline/PWA shell per ANTITHEFT_DOCTRINE_V1 Section 6:
+   CDN fonts are unreachable offline, so the actual font files ship
+   in the app bundle instead. Run `npm install` to pull these in. */
+@import '@fontsource/syne/700.css';
+@import '@fontsource/syne/800.css';
+@import '@fontsource/dm-sans/400.css';
+@import '@fontsource/dm-sans/500.css';
+@import '@fontsource/dm-sans/600.css';
+@import '@fontsource/dm-mono/400.css';
+@import '@fontsource/dm-mono/500.css';
+
 :root {
-	--primary: #007bff;
-	--primary-dark: #0056b3;
-	--primary-light: #cfe2ff;
-	--success: #198754;
-	--danger: #dc3545;
-	--warning: #ffc107;
-	--info: #0dcaf0;
-	--light: #f8f9fa;
-	--dark: #212529;
-	--gray: #6c757d;
+	/* ── Surfaces ── */
+	--bg: #0a0a0f;
+	--surface: #111118;
+	--surface-2: #18181f;
+	--border: #1e1e2e;
+	--border-2: #2a2a3a;
 
-	--font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
-		Arial, sans-serif;
-	--font-display: 'Syne', var(--font-sans);
-	--font-mono: 'Space Mono', 'Courier New', monospace;
+	/* ── Text ── */
+	--text: #f0eff4;
+	--muted: #7a7a8c;
+	--dim: #32323f;
 
+	/* ── Brand accent (amber/gold) ── */
+	--accent: #f59e0b;
+	--accent-dim: rgba(245, 158, 11, 0.12);
+	--accent-glow: rgba(245, 158, 11, 0.2);
+
+	/* ── Stream identity colors ── */
+	--science: #3b82f6;
+	--science-glow: rgba(59, 130, 246, 0.15);
+	--science-dim: rgba(110, 142, 251, 0.08);
+
+	--arts: #a855f7;
+	--arts-glow: rgba(168, 85, 247, 0.15);
+	--arts-dim: rgba(167, 139, 250, 0.07);
+
+	--commerce: #10b981;
+	--commerce-glow: rgba(16, 185, 129, 0.15);
+
+	/* ── State colors ── */
+	--green: #10b981;
+	--green-dim: rgba(16, 185, 129, 0.12);
+	--red: #ef4444;
+	--red-dim: rgba(239, 68, 68, 0.12);
+	--flag: #f59e0b;
+	--live: #4ade80;
+	--live-dim: rgba(74, 222, 128, 0.08);
+
+	/* ── Typography ── */
+	--font-display: 'Syne', sans-serif;
+	--font-sans: 'DM Sans', sans-serif;
+	--font-mono: 'DM Mono', 'Space Mono', 'Courier New', monospace;
+
+	/* ── Spacing ── */
 	--spacing-xs: 0.5rem;
 	--spacing-sm: 1rem;
 	--spacing-md: 1.5rem;
 	--spacing-lg: 2rem;
 	--spacing-xl: 3rem;
 
+	/* ── Radius ── */
 	--radius-sm: 4px;
-	--radius-md: 6px;
-	--radius-lg: 8px;
+	--radius-md: 8px;
+	--radius-card: 14px;
+	--radius-lg: 1.25rem;
 	--radius-full: 9999px;
-
-	--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-	--shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-	--shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
 }
+
+/* ── Stream context blocks ──
+   Apply .stream-context--science / --arts / --commerce to a route's
+   root element to make --accent resolve to that stream's color for
+   everything nested inside it (buttons, gradient-text, glows) without
+   touching individual component classes. */
+.stream-context--science { --accent: var(--science); --accent-glow: var(--science-glow); }
+.stream-context--arts    { --accent: var(--arts);    --accent-glow: var(--arts-glow); }
+.stream-context--commerce{ --accent: var(--commerce); --accent-glow: var(--commerce-glow); }
 
 * {
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
+}
+
+html {
+	scroll-behavior: smooth;
 }
 
 html,
@@ -43,66 +104,760 @@ body {
 }
 
 body {
+	background: var(--bg);
+	color: var(--text);
 	font-family: var(--font-sans);
 	font-size: 1rem;
 	line-height: 1.6;
-	color: var(--dark);
-	background-color: #fff;
+	min-height: 100vh;
+	overflow-x: hidden;
+}
+
+/* Brand grain overlay — present on every real page. */
+body::after {
+	content: '';
+	position: fixed;
+	inset: 0;
+	background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+	pointer-events: none;
+	z-index: 999;
+	opacity: 0.4;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	font-family: var(--font-display);
+	font-weight: 800;
+	letter-spacing: -0.02em;
 }
 
 a {
-	color: var(--primary);
+	color: var(--text);
 	text-decoration: none;
 }
 
-a:hover {
-	color: var(--primary-dark);
-	text-decoration: underline;
+/* ============================================================
+   NAV — two variants: public (marketing) and dashboard (premium)
+   ============================================================ */
+
+nav {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	border-bottom: 1px solid var(--border);
+	position: sticky;
+	top: 0;
+	backdrop-filter: blur(12px);
+	z-index: 100;
 }
 
-button {
-	font-family: inherit;
+/* Public nav (index.html, cluster pages) — default */
+nav {
+	padding: 1.25rem 2rem;
+	background: rgba(10, 10, 15, 0.9);
+}
+
+/* Dashboard nav (premium routes) — denser, carries session state */
+nav.nav-dashboard {
+	padding: 1rem 2rem;
+	background: rgba(10, 10, 15, 0.92);
+	backdrop-filter: blur(14px);
+}
+
+.nav-left { display: flex; align-items: center; gap: 1.25rem; }
+
+.brand {
+	font-family: var(--font-display);
+	font-weight: 800;
+	font-size: 1.25rem;
+	color: var(--text);
+	text-decoration: none;
+	letter-spacing: -0.02em;
+}
+nav.nav-dashboard .brand { font-size: 1.1rem; }
+.brand span { color: var(--accent); }
+
+.nav-badge {
+	font-size: 0.75rem;
+	padding: 0.2rem 0.6rem;
+	border-radius: var(--radius-full);
+	border: 1px solid var(--border);
+	color: var(--muted);
+}
+
+.nav-divider { width: 1px; height: 18px; background: var(--border-2); }
+
+.nav-subject {
+	font-family: var(--font-mono);
+	font-size: 0.68rem;
+	color: var(--accent);
+	text-transform: uppercase;
+	letter-spacing: 0.1em;
+}
+
+.nav-greeting {
+	font-family: var(--font-mono);
+	font-size: 0.7rem;
+	color: var(--muted);
+	background: var(--surface-2);
+	border: 1px solid var(--border-2);
+	padding: 0.25rem 0.7rem;
+	border-radius: var(--radius-full);
+}
+
+/* ── Breadcrumb (nested routes) ── */
+.breadcrumb { font-size: 0.8rem; color: var(--muted); }
+.breadcrumb a { color: var(--muted); text-decoration: none; }
+.breadcrumb a:hover { color: var(--text); }
+.breadcrumb .sep { margin: 0 0.4rem; color: var(--border-2); }
+.breadcrumb .current { color: var(--text); }
+
+/* ============================================================
+   HERO — public (large, centered) and dashboard (compact, left)
+   ============================================================ */
+
+.hero {
+	text-align: center;
+	padding: 5rem 2rem 3rem;
+	position: relative;
+}
+
+.hero-eyebrow {
+	font-size: 0.8rem;
+	letter-spacing: 0.15em;
+	text-transform: uppercase;
+	color: var(--accent);
+	margin-bottom: 1.5rem;
+	font-family: var(--font-display);
+}
+
+.hero h1 {
+	font-size: clamp(2.5rem, 6vw, 4.5rem);
+	line-height: 1.05;
+	letter-spacing: -0.04em;
+	margin-bottom: 1.25rem;
+}
+
+.hero-sub {
+	font-size: 1.05rem;
+	color: var(--muted);
+	max-width: 460px;
+	margin: 0 auto 3.5rem;
+	line-height: 1.7;
+}
+
+/* Dashboard hero — premium routes */
+.hub-hero {
+	max-width: 960px;
+	margin: 0 auto;
+	padding: 3.5rem 2rem 2.5rem;
+	position: relative;
+	z-index: 1;
+}
+
+.hub-eyebrow {
+	font-family: var(--font-mono);
+	font-size: 0.65rem;
+	text-transform: uppercase;
+	letter-spacing: 0.14em;
+	color: var(--muted);
+	margin-bottom: 0.75rem;
+}
+
+.hub-title {
+	font-family: var(--font-display);
+	font-size: clamp(2rem, 5vw, 3rem);
+	font-weight: 800;
+	letter-spacing: -0.04em;
+	line-height: 1.05;
+	margin-bottom: 0.75rem;
+}
+
+.hub-sub {
+	font-size: 0.9rem;
+	color: var(--muted);
+	line-height: 1.7;
+	font-weight: 300;
+	max-width: 500px;
+}
+
+/* Shared gradient-text emphasis, used by both hero variants */
+.hero h1 em,
+.hub-title em {
+	font-style: normal;
+	background: linear-gradient(135deg, var(--accent) 0%, #f97316 100%);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	background-clip: text;
+}
+
+/* ============================================================
+   STEPS (public onboarding indicator)
+   ============================================================ */
+
+.steps {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 4rem;
+	font-size: 0.8rem;
+}
+
+.step { display: flex; align-items: center; gap: 0.4rem; color: var(--muted); }
+.step.active { color: var(--text); }
+
+.step-num {
+	width: 1.6rem;
+	height: 1.6rem;
+	border-radius: 50%;
+	border: 1px solid currentColor;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-family: var(--font-display);
+	font-weight: 700;
+	font-size: 0.75rem;
+}
+
+.step.active .step-num {
+	background: var(--accent);
+	border-color: var(--accent);
+	color: #000;
+}
+
+.step-connector {
+	width: 3rem;
+	height: 1px;
+	background: var(--border);
+	margin: 0 0.5rem;
+}
+
+/* ============================================================
+   SECTION LABEL (dashboard section dividers)
+   ============================================================ */
+
+.section-header {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	margin-bottom: 1.25rem;
+	border-bottom: 1px solid var(--border);
+	padding-bottom: 0.75rem;
+}
+
+.section-title {
+	font-family: var(--font-mono);
+	font-size: 0.65rem;
+	text-transform: uppercase;
+	letter-spacing: 0.14em;
+	color: var(--muted);
+}
+
+.section-count {
+	font-family: var(--font-mono);
+	font-size: 0.65rem;
+	color: var(--border-2);
+}
+
+/* ── Tier divider (premium-hub.html) ── */
+.tier { display: flex; align-items: center; gap: 0.8rem; margin: 2.75rem 0 0.9rem; }
+.tier-name {
+	font-family: var(--font-mono);
+	font-size: 0.6rem;
+	text-transform: uppercase;
+	letter-spacing: 0.14em;
+	white-space: nowrap;
+	flex-shrink: 0;
+}
+.tier-line { flex: 1; height: 1px; background: var(--border); }
+
+/* ============================================================
+   CARDS — three distinct card types with different jobs.
+   Do not merge these into one ".card" class; they carry
+   different density, purpose, and interaction models.
+   ============================================================ */
+
+/* ── 1. Stream card — public marketing, one per stream ── */
+.streams {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+	gap: 1.25rem;
+	max-width: 1000px;
+	margin: 0 auto;
+	padding: 0 2rem 5rem;
+}
+
+.stream-card {
+	display: block;
+	text-decoration: none;
+	color: var(--text);
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-lg);
+	padding: 2rem;
+	position: relative;
+	overflow: hidden;
+	transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stream-card::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	opacity: 0;
+	transition: opacity 0.3s ease;
+	border-radius: inherit;
+}
+
+.stream-card.science::before { background: radial-gradient(ellipse at top left, var(--science-glow), transparent 60%); }
+.stream-card.arts::before    { background: radial-gradient(ellipse at top left, var(--arts-glow), transparent 60%); }
+.stream-card.commerce::before{ background: radial-gradient(ellipse at top left, var(--commerce-glow), transparent 60%); }
+
+.stream-card:hover { transform: translateY(-4px); }
+.stream-card:hover::before { opacity: 1; }
+
+.stream-card.science:hover  { border-color: var(--science);  box-shadow: 0 0 30px var(--science-glow); }
+.stream-card.arts:hover     { border-color: var(--arts);     box-shadow: 0 0 30px var(--arts-glow); }
+.stream-card.commerce:hover { border-color: var(--commerce); box-shadow: 0 0 30px var(--commerce-glow); }
+
+.card-icon { font-size: 2rem; margin-bottom: 1rem; }
+
+.card-tag {
+	font-size: 0.7rem;
+	font-family: var(--font-display);
+	font-weight: 700;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	padding: 0.2rem 0.55rem;
+	border-radius: var(--radius-sm);
+	margin-bottom: 1rem;
+	display: inline-block;
+}
+
+.stream-card.science  .card-tag { background: var(--science-glow);  color: var(--science); }
+.stream-card.arts     .card-tag { background: var(--arts-glow);     color: var(--arts); }
+.stream-card.commerce .card-tag { background: var(--commerce-glow); color: var(--commerce); }
+
+.card-title {
+	font-family: var(--font-display);
+	font-size: 1.4rem;
+	font-weight: 700;
+	margin-bottom: 0.6rem;
+	letter-spacing: -0.02em;
+}
+
+.card-desc { font-size: 0.88rem; color: var(--muted); line-height: 1.6; margin-bottom: 1.5rem; }
+
+.card-subjects { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1.75rem; }
+
+.subject-pill {
+	font-size: 0.72rem;
+	padding: 0.2rem 0.5rem;
+	border-radius: var(--radius-sm);
+	border: 1px solid var(--border);
+	color: var(--muted);
+}
+
+.card-cta {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	font-family: var(--font-display);
+	font-size: 0.85rem;
+	font-weight: 700;
+}
+
+.stream-card.science  .card-cta { color: var(--science); }
+.stream-card.arts     .card-cta { color: var(--arts); }
+.stream-card.commerce .card-cta { color: var(--commerce); }
+
+.cta-arrow { font-size: 1.1rem; transition: transform 0.2s ease; }
+.stream-card:hover .cta-arrow { transform: translateX(4px); }
+
+/* ── 1b. Cluster card (science_clusters.html — same family as stream-card) ── */
+.clusters {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+	gap: 1.25rem;
+}
+
+.cluster-card {
+	display: block;
+	text-decoration: none;
+	color: var(--text);
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-lg);
+	padding: 1.75rem;
+	position: relative;
+	overflow: hidden;
+	transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.cluster-card::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	opacity: 0;
+	transition: opacity 0.3s ease;
+	border-radius: inherit;
+	background: radial-gradient(ellipse at top left, var(--accent-glow), transparent 60%);
+}
+.cluster-card:hover { transform: translateY(-4px); border-color: var(--accent); box-shadow: 0 0 30px var(--accent-glow); }
+.cluster-card:hover::before { opacity: 1; }
+.cluster-card:hover .cta-arrow { transform: translateX(4px); }
+
+.card-header-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; }
+.card-code { font-family: var(--font-mono); font-size: 0.7rem; color: var(--muted); }
+.card-meta { font-size: 0.75rem; color: var(--muted); }
+
+.for-list { list-style: none; margin-top: 1rem; }
+.for-list span { display: flex; align-items: center; gap: 0.5rem; font-size: 0.82rem; color: var(--muted); padding: 0.2rem 0; }
+.for-list span::before { content: '→'; color: var(--accent); }
+
+/* ── 2. Tiered subject card — dashboard, dense grid, many at once ── */
+.grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+	gap: 0.6rem;
+}
+
+.card {
+	display: flex;
+	align-items: center;
+	gap: 0.85rem;
+	padding: 0.95rem 1.1rem;
+	border-radius: 11px;
+	border: 1px solid var(--border);
+	text-decoration: none;
+	color: var(--text);
+	transition: border-color 0.18s, background 0.18s, transform 0.15s;
+}
+.card.live:hover { transform: translateY(-1px); }
+.card.soon { opacity: 0.45; pointer-events: none; }
+
+.card.core { background: var(--science-dim); border-color: rgba(110,142,251,0.12); }
+.card.core:hover { border-color: rgba(110,142,251,0.3); background: rgba(110,142,251,0.12); }
+.card.general { background: var(--arts-dim); border-color: rgba(167,139,250,0.1); }
+.card.general:hover { border-color: rgba(167,139,250,0.28); background: rgba(167,139,250,0.12); }
+.card.specialist { background: rgba(255,255,255,0.02); border-color: rgba(255,255,255,0.06); }
+.card.specialist:hover { border-color: rgba(255,255,255,0.12); background: rgba(255,255,255,0.04); }
+
+.card-icon-sm {
+	width: 34px; height: 34px; border-radius: 8px; flex-shrink: 0;
+	display: flex; align-items: center; justify-content: center; font-size: 0.95rem;
+}
+.core .card-icon-sm { background: rgba(110,142,251,0.12); }
+.general .card-icon-sm { background: rgba(167,139,250,0.1); }
+.specialist .card-icon-sm { background: rgba(255,255,255,0.05); }
+
+.card-info { flex: 1; min-width: 0; }
+.card-name { font-weight: 600; font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.card-sub { font-size: 0.7rem; color: var(--muted); margin-top: 0.1rem; }
+
+/* ── 3. Paper card — dashboard, richest, live/coming states ── */
+.paper-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+	gap: 1rem;
+	margin-bottom: 3rem;
+}
+
+.paper-card {
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-card);
+	padding: 1.4rem 1.5rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.9rem;
+	transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+	position: relative;
+	overflow: hidden;
+}
+.paper-card::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	opacity: 0;
+	transition: opacity 0.3s;
+	border-radius: inherit;
+	pointer-events: none;
+}
+.paper-card.live::before   { background: radial-gradient(ellipse at top left, var(--accent-dim), transparent 65%); }
+.paper-card.coming::before { background: radial-gradient(ellipse at top left, rgba(122,122,140,0.04), transparent 65%); }
+.paper-card.live:hover { border-color: rgba(245,158,11,0.4); box-shadow: 0 0 24px var(--accent-glow); transform: translateY(-2px); }
+.paper-card.live:hover::before { opacity: 1; }
+.paper-card.coming { opacity: 0.65; }
+
+.paper-top { display: flex; align-items: flex-start; justify-content: space-between; }
+.paper-num {
+	font-family: var(--font-display);
+	font-size: 1.5rem;
+	font-weight: 800;
+	letter-spacing: -0.04em;
+	color: var(--accent);
+	line-height: 1;
+}
+.paper-card.coming .paper-num { color: var(--muted); }
+
+.paper-meta { display: flex; flex-direction: column; gap: 0.15rem; }
+.paper-name { font-family: var(--font-display); font-size: 0.9rem; font-weight: 700; }
+.paper-detail { font-family: var(--font-mono); font-size: 0.65rem; color: var(--muted); }
+
+.paper-actions { position: relative; z-index: 2; display: flex; gap: 0.6rem; margin-top: auto; }
+
+/* ── English/solo hero card (premium-hub.html) ── */
+.english-card {
+	display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+	padding: 1.25rem 1.5rem;
+	background: var(--accent-dim);
+	border: 1px solid rgba(245,158,11,0.18);
+	border-radius: 13px;
+	text-decoration: none; color: var(--text);
+	transition: background 0.2s, border-color 0.2s;
+}
+.english-card:hover { background: var(--accent-glow); border-color: rgba(245,158,11,0.38); }
+.ec-left { display: flex; align-items: center; gap: 1rem; }
+.ec-icon {
+	width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
+	background: rgba(245,158,11,0.14);
+	border: 1px solid rgba(245,158,11,0.22);
+	display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
+}
+.ec-name { font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; letter-spacing: -0.01em; }
+.ec-sub { font-size: 0.76rem; color: var(--muted); margin-top: 0.15rem; }
+.ec-right { display: flex; align-items: center; gap: 0.75rem; flex-shrink: 0; }
+.ec-pill {
+	font-family: var(--font-mono); font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.08em;
+	color: var(--accent); background: var(--accent-dim); border: 1px solid rgba(245,158,11,0.18);
+	border-radius: var(--radius-sm); padding: 0.2rem 0.5rem;
+}
+.ec-arrow { color: var(--accent); font-size: 0.95rem; }
+
+/* ── Notes / callout card ── */
+.notes-card {
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-left: 3px solid var(--accent);
+	border-radius: var(--radius-card);
+	padding: 1.5rem;
+	display: flex;
+	align-items: center;
+	gap: 1.25rem;
+	transition: box-shadow 0.2s;
+	text-decoration: none;
+	color: var(--text);
+}
+.notes-card:hover { box-shadow: 0 0 20px var(--accent-glow); }
+.notes-icon { font-size: 2rem; flex-shrink: 0; line-height: 1; }
+.notes-info { flex: 1; }
+.notes-label { font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 0.25rem; }
+.notes-title { font-family: var(--font-display); font-size: 1rem; font-weight: 700; margin-bottom: 0.2rem; }
+.notes-sub { font-size: 0.8rem; color: var(--muted); }
+.notes-arrow { color: var(--muted); font-size: 1.1rem; transition: transform 0.2s; }
+.notes-card:hover .notes-arrow { transform: translateX(4px); color: var(--accent); }
+
+/* ============================================================
+   STATUS BADGES — two systems, kept distinct on purpose.
+   Paper status = content readiness. Availability badge = whether
+   the subject page exists yet. See DESIGN_SYSTEM.md Section 3.4.
+   ============================================================ */
+
+.paper-status {
+	font-family: var(--font-mono);
+	font-size: 0.6rem;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	padding: 0.2rem 0.5rem;
+	border-radius: var(--radius-sm);
+}
+.status-live { background: var(--green-dim); color: var(--green); border: 1px solid rgba(16,185,129,0.25); }
+.status-soon { background: var(--surface-2); color: var(--muted); border: 1px solid var(--border); }
+
+.badge {
+	font-family: var(--font-mono);
+	font-size: 0.52rem;
+	text-transform: uppercase;
+	letter-spacing: 0.07em;
+	border-radius: var(--radius-sm);
+	padding: 0.17rem 0.42rem;
+	flex-shrink: 0;
+}
+.badge.live { color: var(--live); background: var(--live-dim); border: 1px solid rgba(74,222,128,0.18); }
+.badge.soon { color: var(--muted); background: rgba(100,100,122,0.1); border: 1px solid rgba(100,100,122,0.15); }
+
+/* ============================================================
+   STATS BAR
+   ============================================================ */
+
+.stats-bar {
+	display: flex;
+	justify-content: center;
+	gap: 3rem;
+	padding: 2rem;
+	border-top: 1px solid var(--border);
+	border-bottom: 1px solid var(--border);
+	margin-bottom: 4rem;
+	flex-wrap: wrap;
+}
+.stat { text-align: center; }
+.stat-num { font-family: var(--font-display); font-size: 1.75rem; font-weight: 800; color: var(--text); }
+.stat-label { font-size: 0.75rem; color: var(--muted); margin-top: 0.2rem; text-transform: uppercase; letter-spacing: 0.08em; }
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+
+.btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+	padding: 0.5rem 0.9rem;
+	border-radius: var(--radius-md);
+	font-family: var(--font-sans);
+	font-size: 0.82rem;
+	font-weight: 500;
 	cursor: pointer;
 	border: none;
-	padding: var(--spacing-sm) var(--spacing-md);
+	transition: all 0.2s;
+}
+.btn-sm { padding: 0.35rem 0.75rem; font-size: 0.78rem; }
+
+.btn-primary { background: var(--accent); color: #000; font-weight: 700; }
+.btn-primary:hover { opacity: 0.88; }
+
+.btn-secondary { background: var(--surface-2); color: var(--text); border: 1px solid var(--border-2); }
+.btn-secondary:hover { border-color: var(--muted); }
+
+.btn-danger { background: var(--red-dim); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
+.btn-danger:hover { background: rgba(239,68,68,0.2); border-color: var(--red); }
+
+.btn-icon {
+	background: var(--surface-2);
+	border: 1px solid var(--border-2);
+	color: var(--muted);
+	width: 36px;
+	height: 36px;
 	border-radius: var(--radius-md);
-	font-size: 1rem;
-	font-weight: 600;
-	transition: all 0.2s ease;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	transition: all 0.2s;
+	font-size: 0.85rem;
 }
+.btn-icon:hover { color: var(--text); border-color: var(--muted); }
 
-button.primary {
-	background-color: var(--primary);
-	color: white;
+/* Paper-card action button (larger touch target, sits inside a card) */
+.btn-paper {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.35rem;
+	padding: 0.55rem 0.75rem;
+	border-radius: var(--radius-md);
+	font-family: var(--font-display);
+	font-size: 0.78rem;
+	font-weight: 700;
+	cursor: pointer;
+	text-decoration: none;
+	transition: all 0.2s;
+	position: relative;
+	z-index: 2;
 }
+.btn-start { background: var(--accent); color: #000; border: 1px solid var(--accent); }
+.btn-start:hover { opacity: 0.88; }
+.btn-start-disabled { background: var(--surface-2); color: var(--muted); border: 1px solid var(--border); cursor: not-allowed; }
 
-button.primary:hover {
-	background-color: var(--primary-dark);
-}
-
-button.secondary {
-	background-color: var(--light);
-	color: var(--dark);
-	border: 1px solid #ddd;
-}
-
-button.secondary:hover {
-	background-color: #e9ecef;
-}
+/* ============================================================
+   FORMS
+   (No source reference exists yet — original site is content-only,
+   premium-auth.html never had a browser-rendered design pulled.
+   Built to match the token system above; revisit once a real
+   design for login/admin screens exists.)
+   ============================================================ */
 
 input,
 textarea {
 	font-family: inherit;
 	font-size: 1rem;
-	padding: var(--spacing-sm);
-	border: 1px solid #ddd;
+	padding: 0.75rem 1rem;
+	background: var(--surface-2);
+	color: var(--text);
+	border: 1px solid var(--border-2);
 	border-radius: var(--radius-md);
 	transition: border-color 0.2s ease;
 }
-
+input::placeholder,
+textarea::placeholder { color: var(--muted); }
 input:focus,
 textarea:focus {
 	outline: none;
-	border-color: var(--primary);
-	box-shadow: 0 0 0 3px var(--primary-light);
+	border-color: var(--accent);
+	box-shadow: 0 0 0 3px var(--accent-dim);
 }
+
+/* ============================================================
+   ERROR / STATUS BANNERS
+   ============================================================ */
+
+.error-banner {
+	background: var(--red-dim);
+	border: 1px solid rgba(239, 68, 68, 0.3);
+	border-radius: var(--radius-md);
+	padding: 0.75rem 1rem;
+}
+.error-content { display: flex; align-items: center; gap: 0.75rem; color: #fee2e2; font-size: 0.85rem; }
+.error-content h3 { font-size: 0.85rem; font-weight: 700; }
+.error-content p { opacity: 0.85; }
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+
+footer {
+	text-align: center;
+	padding: 2rem;
+	color: var(--muted);
+	font-size: 0.8rem;
+	border-top: 1px solid var(--border);
+}
+
+/* Dashboard footer variant — session/student chips */
+footer.hub-footer {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	gap: 0.75rem;
+	text-align: left;
+	padding: 1.5rem 2rem;
+}
+.footer-session { font-family: var(--font-mono); font-size: 0.65rem; color: var(--muted); }
+.footer-student { font-family: var(--font-mono); font-size: 0.65rem; color: var(--accent); letter-spacing: 0.05em; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 640px) {
+	nav { padding: 0.85rem 1.25rem; }
+	.hub-hero { padding: 2.5rem 1.25rem 1.75rem; }
+	.section-wrap { padding: 0 1.25rem 3rem; }
+	.paper-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 600px) {
+	.steps { font-size: 0.72rem; }
+	.step-connector { width: 1.5rem; }
+	.stats-bar { gap: 1.5rem; }
+}
+
+@media (max-width: 480px) {
+	.hero, .wrap { padding-left: 1.2rem; padding-right: 1.2rem; }
+	.grid { grid-template-columns: 1fr; }
+	.english-card { flex-direction: column; align-items: flex-start; }
+	.ec-right { margin-top: 0.25rem; }
+}
+
+[hidden] { display: none !important; }

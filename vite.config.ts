@@ -1,25 +1,14 @@
-import { defineConfig } from 'vite';
-import { svelte } from '@sveltejs/vite-plugin-svelte';
+import { sveltekit } from '@sveltejs/kit/vite';
 import { SvelteKitPWA } from '@vite-pwa/sveltekit';
+import { defineConfig } from 'vite';
 
 export default defineConfig({
 	plugins: [
-		svelte(),
+		sveltekit(),
 		SvelteKitPWA({
 			strategies: 'generateSW',
 			workbox: {
 				runtimeCaching: [
-					{
-						urlPattern: /^https:\/\/fonts\.(googleapis|gstatic)\.com\/.*/i,
-						handler: 'CacheFirst',
-						options: {
-							cacheName: 'google-fonts-cache',
-							expiration: {
-								maxEntries: 10,
-								maxAgeSeconds: 60 * 60 * 24 * 365
-							}
-						}
-					},
 					{
 						urlPattern: /\/static\/content\/.*/i,
 						handler: 'CacheFirst',
@@ -46,14 +35,14 @@ export default defineConfig({
 				]
 			},
 			manifest: {
-				name: 'GrantApp',
-				short_name: 'GrantApp',
-				description: 'Premium exam preparation platform',
+				name: 'GrantApp AI',
+				short_name: 'GrantApp AI',
+				description: 'Premier UTME exam prep for Nigerian secondary school students',
 				start_url: '/',
 				scope: '/',
 				display: 'standalone',
-				theme_color: '#ffffff',
-				background_color: '#ffffff',
+				theme_color: '#0a0a0f',
+				background_color: '#0a0a0f',
 				icons: [
 					{
 						src: '/icon-192.png',

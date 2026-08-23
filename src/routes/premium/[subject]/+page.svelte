@@ -1,35 +1,37 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	import QuizShell from '$lib/components/QuizShell.svelte';
-	import type { PageData } from './$types';
 
-	export let data: PageData;
-
-	const subjectName = data.params?.subject || 'Subject';
+	$: subjectName = $page.params.subject || 'Subject';
+	$: subjectLabel = subjectName.charAt(0).toUpperCase() + subjectName.slice(1);
 </script>
 
-<div class="premium-subject">
-	<h1>{subjectName.charAt(0).toUpperCase() + subjectName.slice(1)}</h1>
-	<p class="description">Premium papers and practice questions</p>
+<div class="wrap">
+	<div class="breadcrumb">
+		<a href="/premium">Premium</a><span class="sep">/</span><span class="current">{subjectLabel}</span>
+	</div>
 
-	<QuizShell subject={subjectName} questionCount={0} />
+	<h1 class="page-title">{subjectLabel}</h1>
+	<p class="page-intro">Premium papers and practice questions</p>
+
+	<QuizShell subject={subjectLabel} questionCount={0} />
 </div>
 
 <style>
-	.premium-subject {
-		padding: 2rem 1rem;
+	.wrap {
 		max-width: 900px;
 		margin: 0 auto;
+		padding: 2rem 2rem 5rem;
 	}
 
-	h1 {
-		font-size: 2rem;
-		color: #333;
-		margin-bottom: 0.5rem;
+	.page-title {
+		font-size: clamp(1.75rem, 4vw, 2.25rem);
+		letter-spacing: -0.03em;
+		margin: 1rem 0 0.4rem;
 	}
 
-	.description {
-		font-size: 1rem;
-		color: #666;
+	.page-intro {
+		color: var(--muted);
 		margin-bottom: 2rem;
 	}
 </style>

@@ -1,8 +1,13 @@
 <script lang="ts">
+	import '../app.css';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 
 	let online = true;
+
+	// Dashboard nav is denser and carries session state (Section 3.1 of
+	// DESIGN_SYSTEM.md) — public routes get the taller marketing nav.
+	$: isPremium = $page.url.pathname.startsWith('/premium');
 
 	onMount(() => {
 		const handleOnline = () => (online = true);
@@ -11,7 +16,6 @@
 		window.addEventListener('online', handleOnline);
 		window.addEventListener('offline', handleOffline);
 
-		// Check initial status
 		online = navigator.onLine;
 
 		return () => {
@@ -21,119 +25,63 @@
 	});
 </script>
 
-<header class="navbar">
-	<div class="container">
-		<div class="navbar-brand">
-			<a href="/">
-				<h1>GrantApp</h1>
-			</a>
-		</div>
-		<nav class="navbar-menu">
-			<a href="/" class:active={$page.url.pathname === '/'}>Home</a>
-			<a href="/login" class:active={$page.url.pathname === '/login'}>Login</a>
-		</nav>
-		<div class="navbar-status">
-			{#if !online}
-				<span class="offline-badge">Offline</span>
-			{/if}
-		</div>
+<nav class:nav-dashboard={isPremium}>
+	<div class="nav-left">
+		<a href="/" class="brand">GrantApp <span>AI</span></a>
 	</div>
-</header>
+	<div class="nav-links">
+		<a href="/" class:current={$page.url.pathname === '/'}>Home</a>
+		<a href="/login" class:current={$page.url.pathname === '/login'}>Login</a>
+	</div>
+	<div class="nav-right">
+		{#if !online}
+			<span class="nav-badge offline">Offline</span>
+		{/if}
+	</div>
+</nav>
 
-<main class="container main-content">
+<main>
 	<slot />
 </main>
 
-<footer class="footer">
-	<p>&copy; 2026 GrantApp. All rights reserved.</p>
+<footer>
+	<p>&copy; 2026 GrantApp AI. All rights reserved.</p>
 </footer>
 
 <style>
-	:global(body) {
-		display: flex;
-		flex-direction: column;
-		min-height: 100vh;
+	main {
+		min-height: 60vh;
 	}
 
-	:global(main.main-content) {
-		flex: 1;
-		padding: 2rem 1rem;
-	}
-
-	.navbar {
-		background-color: #fff;
-		border-bottom: 1px solid #e0e0e0;
-		padding: 1rem 0;
-		position: sticky;
-		top: 0;
-		z-index: 100;
-	}
-
-	.container {
-		max-width: 1200px;
-		margin: 0 auto;
-		padding: 0 1rem;
+	.nav-links {
 		display: flex;
 		align-items: center;
-		justify-content: space-between;
+		gap: 1.75rem;
 	}
 
-	.navbar-brand h1 {
-		margin: 0;
-		font-size: 1.5rem;
-		color: #007bff;
-	}
-
-	.navbar-menu {
-		display: flex;
-		gap: 2rem;
-		flex: 1;
-		margin-left: 2rem;
-	}
-
-	.navbar-menu a {
+	.nav-links a {
+		font-family: var(--font-sans);
+		font-size: 0.85rem;
 		font-weight: 500;
-		color: #333;
+		color: var(--muted);
 		transition: color 0.2s ease;
 	}
 
-	.navbar-menu a.active {
-		color: #007bff;
-		text-decoration: underline;
+	.nav-links a:hover,
+	.nav-links a.current {
+		color: var(--text);
 	}
 
-	.navbar-menu a:hover {
-		color: #007bff;
-	}
-
-	.navbar-status {
+	.nav-right {
 		display: flex;
 		align-items: center;
-		gap: 1rem;
+		min-width: 0;
 	}
 
-	.offline-badge {
-		display: inline-block;
-		padding: 0.25rem 0.75rem;
-		background-color: #ffc107;
-		color: #333;
-		border-radius: 4px;
-		font-size: 0.875rem;
-		font-weight: 600;
-	}
-
-	.footer {
-		background-color: #f8f9fa;
-		border-top: 1px solid #e0e0e0;
-		padding: 2rem;
-		text-align: center;
-		color: #666;
-		font-size: 0.875rem;
-	}
-
-	.container {
-		max-width: 1200px;
-		margin: 0 auto;
-		width: 100%;
+	.nav-badge.offline {
+		font-family: var(--font-mono);
+		color: var(--flag);
+		border-color: rgba(245, 158, 11, 0.3);
+		background: var(--accent-dim);
 	}
 </style>

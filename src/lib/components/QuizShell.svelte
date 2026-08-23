@@ -4,7 +4,9 @@
 </script>
 
 <div class="quiz-shell">
-	<h2>{subject}</h2>
+	<div class="quiz-header">
+		<span class="section-title">{subject}</span>
+	</div>
 	<div class="quiz-content">
 		{#if questionCount === 0}
 			<p class="placeholder">Quiz content will load here. ({questionCount} questions)</p>
@@ -16,15 +18,14 @@
 
 <style>
 	.quiz-shell {
-		padding: 2rem;
-		background-color: #f9f9f9;
-		border-radius: 8px;
-		border: 1px solid #e0e0e0;
+		padding: 1.75rem;
+		background: var(--surface);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-card);
 	}
 
-	h2 {
-		margin-top: 0;
-		color: #333;
+	.quiz-header {
+		margin-bottom: 1.25rem;
 	}
 
 	.quiz-content {
@@ -35,7 +36,8 @@
 	}
 
 	.placeholder {
-		color: #999;
+		color: var(--muted);
 		font-style: italic;
+		font-size: 0.9rem;
 	}
 </style>
