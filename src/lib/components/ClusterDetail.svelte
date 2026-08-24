@@ -43,25 +43,36 @@
 	</div>
 
 	{#if cluster.available}
-		<a href="/quiz/{stream}/{cluster.slug}" class="notes-card">
-			<div class="notes-icon">⏱️</div>
-			<div class="notes-info">
-				<div class="notes-label">Cluster exam</div>
-				<div class="notes-title">Full {cluster.code} practice test</div>
+		<a href="/quiz/{stream}/{cluster.slug}" class="exam-launch">
+			<div class="exam-launch-readout">
+				<span class="exam-launch-duration">60</span>
+				<span class="exam-launch-unit">min</span>
+			</div>
+			<div class="exam-launch-divider" aria-hidden="true"></div>
+			<div class="exam-launch-info">
+				<div class="exam-launch-label">Cluster exam · {cluster.code}</div>
+				<div class="exam-launch-title">Start practice test</div>
 				<!-- COPY NEEDED: real question/minute counts once the cluster
 				     exam content pipeline exists for this cluster -->
-				<div class="notes-sub">Timed, mixed from all {cluster.subjects.length} subjects</div>
+				<div class="exam-launch-sub">Mixed from all {cluster.subjects.length} subjects</div>
 			</div>
-			<div class="notes-arrow">→</div>
+			<div class="exam-launch-go" aria-hidden="true">
+				<span class="exam-launch-go-bar"></span>
+				<span class="exam-launch-go-arrow">→</span>
+			</div>
 		</a>
 	{:else}
-		<div class="notes-card coming-soon">
-			<div class="notes-icon">🔒</div>
-			<div class="notes-info">
-				<div class="notes-label">Cluster exam</div>
+		<div class="exam-launch exam-launch--locked">
+			<div class="exam-launch-readout">
+				<span class="exam-launch-duration">—</span>
+				<span class="exam-launch-unit">min</span>
+			</div>
+			<div class="exam-launch-divider" aria-hidden="true"></div>
+			<div class="exam-launch-info">
+				<div class="exam-launch-label">Cluster exam · {cluster.code}</div>
 				<!-- COPY NEEDED: final coming-soon messaging -->
-				<div class="notes-title">Coming soon</div>
-				<div class="notes-sub">This cluster's practice content is still being built</div>
+				<div class="exam-launch-title">Coming soon</div>
+				<div class="exam-launch-sub">This cluster's practice content is still being built</div>
 			</div>
 		</div>
 	{/if}
@@ -140,6 +151,137 @@
 	.notes-card.coming-soon {
 		opacity: 0.6;
 		cursor: default;
+	}
+
+	/* ── Exam launch — deliberately not a .notes-card. This is the single
+	   highest-intent action on the page (starting a timed exam), so it
+	   gets its own signature treatment instead of reusing the passive
+	   info-card skin: sharp corners (every other surface on this page
+	   is var(--radius-card)), a literal timer readout instead of an
+	   icon, and a hover that reads as "the clock starting to run"
+	   rather than a generic glow. ── */
+	.exam-launch {
+		display: flex;
+		align-items: stretch;
+		gap: 0;
+		margin-bottom: 2.5rem;
+		border: 1px solid var(--border-2);
+		border-radius: 2px;
+		background: var(--surface);
+		text-decoration: none;
+		color: var(--text);
+		overflow: hidden;
+		position: relative;
+	}
+
+	.exam-launch-readout {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 1.25rem 1.5rem;
+		background: var(--bg);
+		min-width: 88px;
+	}
+
+	.exam-launch-duration {
+		font-family: var(--font-mono);
+		font-size: 1.6rem;
+		font-weight: 500;
+		line-height: 1;
+		color: var(--accent);
+		font-variant-numeric: tabular-nums;
+	}
+
+	.exam-launch-unit {
+		font-family: var(--font-mono);
+		font-size: 0.62rem;
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		color: var(--muted);
+		margin-top: 0.3rem;
+	}
+
+	.exam-launch-divider {
+		width: 1px;
+		background: var(--border-2);
+		align-self: stretch;
+	}
+
+	.exam-launch-info {
+		flex: 1;
+		padding: 1.25rem 1.5rem;
+		min-width: 0;
+	}
+
+	.exam-launch-label {
+		font-family: var(--font-mono);
+		font-size: 0.62rem;
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		color: var(--accent);
+		margin-bottom: 0.3rem;
+	}
+
+	.exam-launch-title {
+		font-family: var(--font-display);
+		font-size: 1.15rem;
+		font-weight: 700;
+		margin-bottom: 0.2rem;
+	}
+
+	.exam-launch-sub {
+		font-size: 0.8rem;
+		color: var(--muted);
+	}
+
+	.exam-launch-go {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 56px;
+		flex-shrink: 0;
+		position: relative;
+		overflow: hidden;
+	}
+
+	.exam-launch-go-bar {
+		position: absolute;
+		inset: 0;
+		background: var(--accent);
+		transform: translateX(-100%);
+		transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	.exam-launch-go-arrow {
+		position: relative;
+		font-size: 1.1rem;
+		color: var(--muted);
+		transition:
+			color 0.2s ease,
+			transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	.exam-launch:hover {
+		border-color: var(--accent);
+	}
+
+	.exam-launch:hover .exam-launch-go-bar {
+		transform: translateX(0);
+	}
+
+	.exam-launch:hover .exam-launch-go-arrow {
+		color: #000;
+		transform: translateX(3px);
+	}
+
+	.exam-launch--locked {
+		cursor: default;
+		opacity: 0.55;
+	}
+
+	.exam-launch--locked .exam-launch-duration {
+		color: var(--muted);
 	}
 
 	.subject-drill-grid {
