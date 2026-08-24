@@ -17,8 +17,8 @@ const RECENCY_EXCLUDE_DAYS = 14; // don't resurface a question seen in the last 
  */
 export const GET: RequestHandler = async ({ url, locals }) => {
 	try {
-		const session = await locals.getSession();
-		if (!session?.user?.id) {
+		const { session, user } = await locals.safeGetSession();
+		if (!session || !user) {
 			return json({ message: 'Unauthorized' }, { status: 401 });
 		}
 
@@ -44,7 +44,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		const { data: existing, error: existingError } = await adminClient
 			.from('daily_assignments')
 			.select('question_ids, completed_count')
-			.eq('student_id', session.user.id)
+			.eq('student_id', user.id)
 			.eq('assigned_date', today)
 			.maybeSingle();
 
@@ -61,7 +61,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			const { data: recentAnswers, error: recentError } = await adminClient
 				.from('answer_events')
 				.select('question_id')
-				.eq('student_id', session.user.id)
+				.eq('student_id', user.id)
 				.eq('subject', subject)
 				.gte('answered_at', cutoff.toISOString());
 
@@ -70,7 +70,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			const excludeIds = (recentAnswers ?? []).map((r) => r.question_id);
 			const selected = await selectAdaptiveQuestions(
 				adminClient,
-				session.user.id,
+				user.id,
 				subject,
 				DAILY_COUNT,
 				excludeIds
@@ -79,7 +79,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 			questionIds = selected.map((q) => q.id);
 
 			const { error: insertError } = await adminClient.from('daily_assignments').insert({
-				student_id: session.user.id,
+				student_id: user.id,
 				assigned_date: today,
 				question_ids: questionIds,
 				completed_count: 0

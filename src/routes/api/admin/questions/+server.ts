@@ -27,8 +27,8 @@ type IncomingQuestion = {
  */
 export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
-		const session = await locals.getSession();
-		if (!session?.user?.email) {
+		const { session, user } = await locals.safeGetSession();
+		if (!session || !user?.email) {
 			return json({ message: 'Unauthorized' }, { status: 401 });
 		}
 
@@ -37,7 +37,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.map((e: string) => e.trim().toLowerCase())
 			.filter(Boolean);
 
-		if (!adminEmails.includes(session.user.email.toLowerCase())) {
+		if (!adminEmails.includes(user.email.toLowerCase())) {
 			return json({ message: 'Forbidden' }, { status: 403 });
 		}
 
@@ -82,7 +82,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				negative_marking_value: q.negative_marking_value ?? 0.25,
 				difficulty: q.difficulty ?? null,
 				source: q.source ?? null,
-				created_by: session.user.email
+				created_by: user.email
 			};
 		});
 

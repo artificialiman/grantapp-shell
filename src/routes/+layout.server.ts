@@ -1,18 +1,12 @@
 import type { LayoutServerLoad } from './$types';
-import { client } from '$lib/supabase';
 
 export const load: LayoutServerLoad = async (event) => {
 	try {
-		const session = await event.locals.getSession();
-		const user = session?.user;
+		const { session, user } = await event.locals.safeGetSession();
 
 		let student = null;
 		if (user) {
-			const { data } = await client
-				.from('students')
-				.select('*')
-				.eq('id', user.id)
-				.single();
+			const { data } = await event.locals.supabase.from('students').select('*').eq('id', user.id).single();
 			student = data;
 		}
 

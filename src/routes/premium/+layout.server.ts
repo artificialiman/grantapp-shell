@@ -1,21 +1,20 @@
 import { redirect } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
-import { client } from '$lib/supabase';
 
 export const load: LayoutServerLoad = async (event) => {
 	try {
-		const session = await event.locals.getSession();
+		const { session, user } = await event.locals.safeGetSession();
 
 		// Must have a session
-		if (!session) {
+		if (!session || !user) {
 			throw redirect(303, '/login');
 		}
 
 		// Fetch student profile
-		const { data: student, error } = await client
+		const { data: student, error } = await event.locals.supabase
 			.from('students')
 			.select('*')
-			.eq('id', session.user.id)
+			.eq('id', user.id)
 			.single();
 
 		if (error || !student) {

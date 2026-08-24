@@ -12,9 +12,9 @@ import type { LayoutServerLoad } from './$types';
  * decides its own admin status.
  */
 export const load: LayoutServerLoad = async (event) => {
-	const session = await event.locals.getSession();
+	const { session, user } = await event.locals.safeGetSession();
 
-	if (!session?.user?.email) {
+	if (!session || !user?.email) {
 		throw redirect(303, '/login');
 	}
 
@@ -23,7 +23,7 @@ export const load: LayoutServerLoad = async (event) => {
 		.map((e: string) => e.trim().toLowerCase())
 		.filter(Boolean);
 
-	if (!adminEmails.includes(session.user.email.toLowerCase())) {
+	if (!adminEmails.includes(user.email.toLowerCase())) {
 		// Deliberately identical redirect to "not logged in" — don't leak
 		// that this route exists or that the check is email-based to a
 		// logged-in non-admin user poking around.

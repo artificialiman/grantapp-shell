@@ -10,9 +10,9 @@ import type { LayoutServerLoad } from './$types';
  * which undercuts the free tier's value.
  */
 export const load: LayoutServerLoad = async (event) => {
-	const session = await event.locals.getSession();
+	const { session, user } = await event.locals.safeGetSession();
 
-	if (!session) {
+	if (!session || !user) {
 		throw redirect(303, '/login');
 	}
 

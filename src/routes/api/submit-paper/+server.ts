@@ -11,8 +11,8 @@ const SERVICE_ROLE_KEY = process.env.SERVICE_ROLE_KEY;
  */
 export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
-		const session = await locals.getSession();
-		if (!session?.user?.id) {
+		const { session, user } = await locals.safeGetSession();
+		if (!session || !user) {
 			return json({ message: 'Unauthorized' }, { status: 401 });
 		}
 
@@ -46,7 +46,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		const { error: upsertError } = await adminClient.from('paper_progress').upsert(
 			{
-				student_id: session.user.id,
+				student_id: user.id,
 				subject,
 				paper_number,
 				status,
@@ -70,7 +70,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		if (isComplete && paper_number < 10) {
 			await adminClient.from('paper_progress').upsert(
 				{
-					student_id: session.user.id,
+					student_id: user.id,
 					subject,
 					paper_number: paper_number + 1,
 					status: 'unlocked',
