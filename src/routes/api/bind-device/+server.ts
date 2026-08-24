@@ -5,9 +5,9 @@ const SERVICE_ROLE_KEY = process.env.SERVICE_ROLE_KEY;
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
-		const session = await locals.getSession();
+		const { session, user } = await locals.safeGetSession();
 
-		if (!session?.user?.id) {
+		if (!session || !user) {
 			return json({ message: 'Unauthorized' }, { status: 401 });
 		}
 
@@ -36,7 +36,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const { data: existing, error: checkError } = await adminClient
 			.from('device_bindings')
 			.select('*')
-			.eq('student_id', session.user.id)
+			.eq('student_id', user.id)
 			.single();
 
 		if (checkError && checkError.code !== 'PGRST116') {
@@ -47,7 +47,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// No existing binding - create new one
 		if (!existing) {
 			const { error: insertError } = await adminClient.from('device_bindings').insert({
-				student_id: session.user.id,
+				student_id: user.id,
 				device_tag,
 				device_label: 'Web Browser',
 				bound_at: new Date().toISOString(),
@@ -67,7 +67,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			const { error: updateError } = await adminClient
 				.from('device_bindings')
 				.update({ last_seen_at: new Date().toISOString() })
-				.eq('student_id', session.user.id);
+				.eq('student_id', user.id);
 
 			if (updateError) {
 				console.error('Error updating device binding:', updateError);

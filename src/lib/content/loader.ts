@@ -1,5 +1,3 @@
-import { client } from '$lib/supabase';
-
 /**
  * Load static question content from JSON file.
  * In a real app, this would be replaced with dynamic content loading.
