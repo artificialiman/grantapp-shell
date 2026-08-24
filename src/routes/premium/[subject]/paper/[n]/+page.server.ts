@@ -1,10 +1,9 @@
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { client } from '$lib/supabase';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
-	const session = await locals.getSession();
-	if (!session?.user?.id) {
+	const { session, user } = await locals.safeGetSession();
+	if (!session || !user) {
 		throw redirect(303, '/login');
 	}
 
@@ -19,10 +18,10 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	// marked completed server-side — this check must live here, not just in
 	// the hub UI, or a student could hit the URL directly and skip the gate.
 	if (paperNumber > 1) {
-		const { data: previous } = await client
+		const { data: previous } = await locals.supabase
 			.from('paper_progress')
 			.select('status')
-			.eq('student_id', session.user.id)
+			.eq('student_id', user.id)
 			.eq('subject', subject)
 			.eq('paper_number', paperNumber - 1)
 			.maybeSingle();
@@ -32,10 +31,10 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		}
 	}
 
-	const { data: current } = await client
+	const { data: current } = await locals.supabase
 		.from('paper_progress')
 		.select('status, answered_count, score')
-		.eq('student_id', session.user.id)
+		.eq('student_id', user.id)
 		.eq('subject', subject)
 		.eq('paper_number', paperNumber)
 		.maybeSingle();
