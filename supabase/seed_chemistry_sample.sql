@@ -14,7 +14,7 @@ insert into public.questions
 values
   (
     'chemistry', 'Separation of Mixtures and Purification of Chemical Substances', 'Distillation',
-    array['Procedural'], array['Essential', 'Procedural'],
+    array['Procedural / supply chain'], array['Essential / definitive', 'Procedural / supply chain'],
     'Which separation technique is most suitable for separating a mixture of ethanol and water?',
     '[{"id":"a","text":"Filtration"},{"id":"b","text":"Fractional distillation"},{"id":"c","text":"Decantation"},{"id":"d","text":"Sublimation"}]'::jsonb,
     'b',
@@ -23,7 +23,7 @@ values
   ),
   (
     'chemistry', 'Separation of Mixtures and Purification of Chemical Substances', 'Chromatography',
-    array['Pragmatic'], array['Essential'],
+    array['Pragmatic'], array['Essential / definitive'],
     'Paper chromatography is commonly used to separate the components of which of the following?',
     '[{"id":"a","text":"Crude oil"},{"id":"b","text":"Plant pigments"},{"id":"c","text":"Salt and sand"},{"id":"d","text":"Iron filings and sulfur"}]'::jsonb,
     'b',
@@ -32,7 +32,7 @@ values
   ),
   (
     'chemistry', 'Atomic Structure and Bonding', 'Electronic Configuration',
-    array['Logical'], array['Essential', 'Theory topics'],
+    array['Logical'], array['Essential / definitive', 'Theory topics'],
     'What is the electronic configuration of an atom with atomic number 12?',
     '[{"id":"a","text":"2,8,2"},{"id":"b","text":"2,8,1"},{"id":"c","text":"2,2,8"},{"id":"d","text":"2,10"}]'::jsonb,
     'a',
@@ -50,7 +50,7 @@ values
   ),
   (
     'chemistry', 'Chemical Bonding', 'Covalent Bonding',
-    array['Logical'], array['Essential', 'Theory topics'],
+    array['Logical'], array['Essential / definitive', 'Theory topics'],
     'Which type of bond is formed when two atoms share a pair of electrons?',
     '[{"id":"a","text":"Ionic bond"},{"id":"b","text":"Covalent bond"},{"id":"c","text":"Metallic bond"},{"id":"d","text":"Hydrogen bond"}]'::jsonb,
     'b',
@@ -77,7 +77,7 @@ values
   ),
   (
     'chemistry', 'Stoichiometry and Chemical Calculations', 'Balancing Equations',
-    array['Procedural', 'Pure Mathematical'], array['Procedural', 'Symbol / notation topics'],
+    array['Procedural / supply chain', 'Pure Mathematical'], array['Procedural / supply chain', 'Symbol / notation topics'],
     'Balance the equation: __N2 + __H2 -> __NH3',
     '[{"id":"a","text":"1, 3, 2"},{"id":"b","text":"2, 3, 1"},{"id":"c","text":"1, 2, 3"},{"id":"d","text":"2, 1, 2"}]'::jsonb,
     'a',
@@ -95,7 +95,7 @@ values
   ),
   (
     'chemistry', 'States of Matter', 'Kinetic Theory',
-    array['Logical'], array['Essential', 'Theory topics'],
+    array['Logical'], array['Essential / definitive', 'Theory topics'],
     'According to the kinetic theory of matter, particles in a gas:',
     '[{"id":"a","text":"Are tightly packed and vibrate in place"},{"id":"b","text":"Move randomly and rapidly with large spaces between them"},{"id":"c","text":"Are arranged in a fixed lattice"},{"id":"d","text":"Do not move at all"}]'::jsonb,
     'b',
