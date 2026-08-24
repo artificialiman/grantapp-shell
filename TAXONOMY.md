@@ -17,10 +17,10 @@ Math questions may touch **Pure Mathematical** in addition to any Math-specific 
 The category of knowledge/content the question draws on.
 
 ### Base set
-- Essential
-- Contextual
+- Essential / definitive
+- Contextual / rhetoric
 - Abstract / Visual
-- Procedural
+- Procedural / supply chain
 - Mathematical Proofs
 
 ### Math expansion (additive, not a replacement)
