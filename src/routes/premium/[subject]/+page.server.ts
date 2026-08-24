@@ -1,22 +1,21 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { client } from '$lib/supabase';
 import type { PaperSummary, PaperStatus } from '$lib/content/subjects';
 
 const TOTAL_PAPERS = 10;
 
 export const load: PageServerLoad = async ({ params, locals }) => {
-	const session = await locals.getSession();
-	if (!session?.user?.id) {
+	const { session, user } = await locals.safeGetSession();
+	if (!session || !user) {
 		throw redirect(303, '/login');
 	}
 
 	const subject = params.subject;
 
-	const { data: rows, error } = await client
+	const { data: rows, error } = await locals.supabase
 		.from('paper_progress')
 		.select('paper_number, status, answered_count, score')
-		.eq('student_id', session.user.id)
+		.eq('student_id', user.id)
 		.eq('subject', subject);
 
 	if (error) {

@@ -14,8 +14,8 @@ const SERVICE_ROLE_KEY = process.env.SERVICE_ROLE_KEY;
  */
 export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
-		const session = await locals.getSession();
-		if (!session?.user?.id) {
+		const { session, user } = await locals.safeGetSession();
+		if (!session || !user) {
 			return json({ message: 'Unauthorized' }, { status: 401 });
 		}
 
@@ -67,7 +67,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const pointsAwarded = isSkipped ? 0 : isCorrect ? 1 : -question.negative_marking_value;
 
 		const { error: insertError } = await adminClient.from('answer_events').insert({
-			student_id: session.user.id,
+			student_id: user.id,
 			question_id: question.id,
 			subject: question.subject,
 			topic: question.topic,
@@ -93,7 +93,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		if (context !== 'premium_paper' && !isSkipped) {
 			await updateMasteryForAnswer(
 				adminClient,
-				session.user.id,
+				user.id,
 				question.subject,
 				question.cognitive_patterns,
 				question.information_types,

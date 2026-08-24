@@ -1,4 +1,3 @@
-import { client } from '$lib/supabase';
 import {
 	getMasteryGrid,
 	getTopicBreakdown,
@@ -10,17 +9,17 @@ import type { PageServerLoad } from './$types';
 
 const DEFAULT_SUBJECT = 'chemistry';
 
-export const load: PageServerLoad = async ({ url, parent }) => {
+export const load: PageServerLoad = async ({ url, parent, locals }) => {
 	const { session } = await parent();
 	const subject = url.searchParams.get('subject') ?? DEFAULT_SUBJECT;
 	const studentId = session.user.id;
 
 	const [masteryGrid, topicBreakdown, dailyTrend, confidenceCalibration, summary] = await Promise.all([
-		getMasteryGrid(client, studentId, subject),
-		getTopicBreakdown(client, studentId, subject),
-		getDailyTrend(client, studentId, subject),
-		getConfidenceCalibration(client, studentId, subject),
-		getSummaryStats(client, studentId, subject)
+		getMasteryGrid(locals.supabase, studentId, subject),
+		getTopicBreakdown(locals.supabase, studentId, subject),
+		getDailyTrend(locals.supabase, studentId, subject),
+		getConfidenceCalibration(locals.supabase, studentId, subject),
+		getSummaryStats(locals.supabase, studentId, subject)
 	]);
 
 	return {
