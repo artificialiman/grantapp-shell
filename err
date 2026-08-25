@@ -1,41 +1,66 @@
-22:45:12.674 
-npm error
-22:45:12.674 
-npm error Could not resolve dependency:
-22:45:12.674 
-npm error peer eslint@"^8.56.0" from @typescript-eslint/parser@7.18.0
-22:45:12.674 
-npm error node_modules/@typescript-eslint/parser
-22:45:12.675 
-npm error   dev @typescript-eslint/parser@"^7.0.0" from the root project
-22:45:12.675 
-npm error   peer @typescript-eslint/parser@"^7.0.0" from @typescript-eslint/eslint-plugin@7.18.0
-22:45:12.675 
-npm error   node_modules/@typescript-eslint/eslint-plugin
-22:45:12.675 
-npm error     dev @typescript-eslint/eslint-plugin@"^7.0.0" from the root project
-22:45:12.675 
-npm error
-22:45:12.676 
-npm error Fix the upstream dependency conflict, or retry this command with --force or --legacy-peer-deps to accept an incorrect (and potentially broken) dependency resolution.
-22:45:12.676 
-npm error
-22:45:12.676 
-npm error
-22:45:12.676 
-npm error For a full report see:
-22:45:12.676 
-npm error /vercel/.npm/_logs/2026-08-23T21_45_07_372Z-eresolve-report.txt
-22:45:12.676 
-npm error A complete log of this run can be found in: /vercel/.npm/_logs/2026-08-23T21_45_07_372Z-debug-0.log
-22:45:12.710 
-Error: Command "npm install" exited with 1### Fluid
-
-200 MB
-
-Response finished in 295ms
-
-## Deployment Information
-Deployment ID: dpl_3SGAqtZvDZBA6nNiaUBnmb4vhD4f
-Environment: production
-Branch: deploy/vercel
+Request URL
+https://grantapp-shell.vercel.app/api/bind-device
+Request Method
+POST
+Status Code
+500 Internal Server Error
+Remote Address
+64.29.17.131:443
+Referrer Policy
+strict-origin-when-cross-origin
+cache-control
+public, max-age=0, must-revalidate
+content-length
+28
+content-type
+application/json
+date
+Tue, 25 Aug 2026 05:39:31 GMT
+server
+Vercel
+strict-transport-security
+max-age=63072000; includeSubDomains; preload
+x-vercel-cache
+MISS
+x-vercel-id
+cpt1::iad1::bnmhd-1787636371160-4abc6cc82711
+:authority
+grantapp-shell.vercel.app
+:method
+POST
+:path
+/api/bind-device
+:scheme
+https
+accept
+*/*
+accept-encoding
+gzip, deflate, br, zstd
+accept-language
+en-US,en;q=0.9
+content-length
+53
+content-type
+application/json
+cookie
+sb-zwimeecflbuqlnqabziw-auth-token=base64-eyJhY2Nlc3NfdG9rZW4iOiJleUpoYkdjaU9pSkZVekkxTmlJc0ltdHBaQ0k2SWpFek5USTJOek14TFdVM01HWXRORFl6WVMwNU16a3lMVEJqWkRKbU9UTXlPR1psT0NJc0luUjVjQ0k2SWtwWFZDSjkuZXlKcGMzTWlPaUpvZEhSd2N6b3ZMM3AzYVcxbFpXTm1iR0oxY1d4dWNXRmllbWwzTG5OMWNHRmlZWE5sTG1OdkwyRjFkR2d2ZGpFaUxDSnpkV0lpT2lJd09XTmxOamt5WVMweVlUSm1MVFF3T0RVdFlUazFZeTAyWlRJd00yTTFZakkyWWpFaUxDSmhkV1FpT2lKaGRYUm9aVzUwYVdOaGRHVmtJaXdpWlhod0lqb3hOemczTmpNNU9UY3dMQ0pwWVhRaU9qRTNPRGMyTXpZek56QXNJbVZ0WVdsc0lqb2lZWEowYVdacFkybGhiR2x0WVc0eE1URkFaMjFoYVd3dVkyOXRJaXdpY0dodmJtVWlPaUlpTENKaGNIQmZiV1YwWVdSaGRHRWlPbnNpY0hKdmRtbGtaWElpT2lKbGJXRnBiQ0lzSW5CeWIzWnBaR1Z5Y3lJNld5SmxiV0ZwYkNKZGZTd2lkWE5sY2w5dFpYUmhaR0YwWVNJNmV5SmxiV0ZwYkY5MlpYSnBabWxsWkNJNmRISjFaWDBzSW5KdmJHVWlPaUpoZFhSb1pXNTBhV05oZEdWa0lpd2lZV0ZzSWpvaVlXRnNNU0lzSW1GdGNpSTZXM3NpYldWMGFHOWtJam9pY0dGemMzZHZjbVFpTENKMGFXMWxjM1JoYlhBaU9qRTNPRGMyTXpZek56QjlYU3dpYzJWemMybHZibDlwWkNJNkltRXpaVGxsTVRaakxURXlPR1V0TkdJNU1pMDVOMkV4TFRnM09HWmhZbUV3TXpOallTSXNJbWx6WDJGdWIyNTViVzkxY3lJNlptRnNjMlY5Lms4VWdfU2hTNU1zOEhxQm5ZT205dnBHY09UYjhHMF9BRHZBbVRyWk1KUndDNXhLMFhXZE4tM1l5R2VnUU5QcXJqb0QzMUduelNDc19aZUdBT1lyelFnIiwidG9rZW5fdHlwZSI6ImJlYXJlciIsImV4cGlyZXNfaW4iOjM2MDAsImV4cGlyZXNfYXQiOjE3ODc2Mzk5NzAsInJlZnJlc2hfdG9rZW4iOiI0NmNkN2dvamxkcGQiLCJ1c2VyIjp7ImlkIjoiMDljZTY5MmEtMmEyZi00MDg1LWE5NWMtNmUyMDNjNWIyNmIxIiwiYXVkIjoiYXV0aGVudGljYXRlZCIsInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiZW1haWwiOiJhcnRpZmljaWFsaW1hbjExMUBnbWFpbC5jb20iLCJlbWFpbF9jb25maXJtZWRfYXQiOiIyMDI2LTA4LTI0VDIxOjQ0OjIyLjkwOTE3M1oiLCJwaG9uZSI6IiIsImNvbmZpcm1lZF9hdCI6IjIwMjYtMDgtMjRUMjE6NDQ6MjIuOTA5MTczWiIsImxhc3Rfc2lnbl9pbl9hdCI6IjIwMjYtMDgtMjVUMDU6Mzk6MzAuODkzMDU0NDY2WiIsImFwcF9tZXRhZGF0YSI6eyJwcm92aWRlciI6ImVtYWlsIiwicHJvdmlkZXJzIjpbImVtYWlsIl19LCJ1c2VyX21ldGFkYXRhIjp7ImVtYWlsX3ZlcmlmaWVkIjp0cnVlfSwiaWRlbnRpdGllcyI6W3siaWRlbnRpdHlfaWQiOiIzMGM1MThhNS1jYjU4LTQ2MDktOGE1My1hYmExOTIzMTQ5ZDIiLCJpZCI6IjA5Y2U2OTJhLTJhMmYtNDA4NS1hOTVjLTZlMjAzYzViMjZiMSIsInVzZXJfaWQiOiIwOWNlNjkyYS0yYTJmLTQwODUtYTk1Yy02ZTIwM2M1YjI2YjEiLCJpZGVudGl0eV9kYXRhIjp7ImVtYWlsIjoiYXJ0aWZpY2lhbGltYW4xMTFAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJwaG9uZV92ZXJpZmllZCI6ZmFsc2UsInN1YiI6IjA5Y2U2OTJhLTJhMmYtNDA4NS1hOTVjLTZlMjAzYzViMjZiMSJ9LCJwcm92aWRlciI6ImVtYWlsIiwibGFzdF9zaWduX2luX2F0IjoiMjAyNi0wOC0yNFQyMTo0NDoyMi45MDQ0MTlaIiwiY3JlYXRlZF9hdCI6IjIwMjYtMDgtMjRUMjE6NDQ6MjIuOTA0NDg5WiIsInVwZGF0ZWRfYXQiOiIyMDI2LTA4LTI0VDIxOjQ0OjIyLjkwNDQ4OVoiLCJlbWFpbCI6ImFydGlmaWNpYWxpbWFuMTExQGdtYWlsLmNvbSJ9XSwiY3JlYXRlZF9hdCI6IjIwMjYtMDgtMjRUMjE6NDQ6MjIuODg1OTgxWiIsInVwZGF0ZWRfYXQiOiIyMDI2LTA4LTI1VDA1OjM5OjMwLjg5NjYyNloiLCJpc19hbm9ueW1vdXMiOmZhbHNlfSwid2Vha19wYXNzd29yZCI6bnVsbH0
+origin
+https://grantapp-shell.vercel.app
+priority
+u=1, i
+referer
+https://grantapp-shell.vercel.app/login
+sec-ch-ua
+"Not=A?Brand";v="99", "Google Chrome";v="151", "Chromium";v="151"
+sec-ch-ua-mobile
+?0
+sec-ch-ua-platform
+"Windows"
+sec-fetch-dest
+empty
+sec-fetch-mode
+cors
+sec-fetch-site
+same-origin
+user-agent
+Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36
