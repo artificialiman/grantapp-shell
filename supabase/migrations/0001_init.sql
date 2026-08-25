@@ -12,7 +12,11 @@ create table public.students (
 );
 
 -- Device binding. One row per student, hard-enforced 1:1.
--- A new device REPLACES this row (old device is invalidated), it does not add a second row.
+-- A second, different device does NOT replace this row automatically --
+-- see /api/bind-device: a mismatched device_tag is rejected with 409, not
+-- swapped in. The row only ever changes via an admin unlock (deferred to
+-- Phase 9; see src/routes/api/admin/unlock/+server.ts), which is expected
+-- to update this same row in place rather than insert a second one.
 create table public.device_bindings (
   student_id uuid primary key references public.students(id) on delete cascade,
   device_tag text not null,

@@ -1,9 +1,13 @@
 import { json } from '@sveltejs/kit';
+import { env } from '$env/dynamic/private';
+import { DEVICE_TAG_KEY } from '$lib/auth/deviceTag';
 import type { RequestHandler } from './$types';
 
-const SERVICE_ROLE_KEY = process.env.SERVICE_ROLE_KEY;
+// $env/dynamic/private, not process.env -- see hooks.server.ts for why:
+// adapter-auto can land on a runtime where process.env isn't reliable.
+const SERVICE_ROLE_KEY = env.SERVICE_ROLE_KEY;
 
-export const POST: RequestHandler = async ({ request, locals }) => {
+export const POST: RequestHandler = async ({ request, locals, cookies }) => {
 	try {
 		const { session, user } = await locals.safeGetSession();
 
@@ -24,7 +28,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		// Import Supabase client for this request (uses service role)
 		const { createClient } = await import('@supabase/supabase-js');
-		const supabaseUrl = process.env.VITE_SUPABASE_URL;
+		const supabaseUrl = env.VITE_SUPABASE_URL;
 
 		if (!supabaseUrl) {
 			return json({ message: 'Server configuration error' }, { status: 500 });
@@ -75,6 +79,16 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				return json({ message: 'Failed to bind device' }, { status: 500 });
 			}
 
+			// Belt-and-suspenders: set the cookie server-side too, not just
+			// via client JS in deviceTag.ts. The premium gate reads this
+			// cookie on every load, so it must exist regardless of any
+			// client-side timing quirk.
+			cookies.set(DEVICE_TAG_KEY, device_tag, {
+				path: '/',
+				maxAge: 60 * 60 * 24 * 365,
+				sameSite: 'lax'
+			});
+
 			return json({ message: 'Device bound successfully', subscription_active: subscriptionActive }, { status: 200 });
 		}
 
@@ -89,6 +103,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				console.error('Error updating device binding:', updateError);
 				return json({ message: 'Failed to update device' }, { status: 500 });
 			}
+
+			cookies.set(DEVICE_TAG_KEY, device_tag, {
+				path: '/',
+				maxAge: 60 * 60 * 24 * 365,
+				sameSite: 'lax'
+			});
 
 			return json({ message: 'Device updated successfully', subscription_active: subscriptionActive }, { status: 200 });
 		}
