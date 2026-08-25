@@ -1,40 +1,35 @@
-# POST /api/bind-device
-
-Status: 401
-
-## Request
-
-Started: Aug 24 23:45:36.11 GMT+1
-
-Request ID: 7x4sr-1787611536116-0f7c56abdea2
-
-Path: /api/bind-device
-
-Host: grantapp-shell.vercel.app
-
-User Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36
-
-Referer: https://grantapp-shell.vercel.app/login
-
-Received in Cape Town, South Africa (cpt1)
-
-### Firewall
-
-Allowed
-
-Routed to Washington, D.C., USA (iad1)
-
-### Function Invocation
-
-Route: /api/bind-device
-
-Execution Duration: 29ms
-
-### External APIs
-
-No outgoing requests
-
-### Fluid
+22:45:12.674 
+npm error
+22:45:12.674 
+npm error Could not resolve dependency:
+22:45:12.674 
+npm error peer eslint@"^8.56.0" from @typescript-eslint/parser@7.18.0
+22:45:12.674 
+npm error node_modules/@typescript-eslint/parser
+22:45:12.675 
+npm error   dev @typescript-eslint/parser@"^7.0.0" from the root project
+22:45:12.675 
+npm error   peer @typescript-eslint/parser@"^7.0.0" from @typescript-eslint/eslint-plugin@7.18.0
+22:45:12.675 
+npm error   node_modules/@typescript-eslint/eslint-plugin
+22:45:12.675 
+npm error     dev @typescript-eslint/eslint-plugin@"^7.0.0" from the root project
+22:45:12.675 
+npm error
+22:45:12.676 
+npm error Fix the upstream dependency conflict, or retry this command with --force or --legacy-peer-deps to accept an incorrect (and potentially broken) dependency resolution.
+22:45:12.676 
+npm error
+22:45:12.676 
+npm error
+22:45:12.676 
+npm error For a full report see:
+22:45:12.676 
+npm error /vercel/.npm/_logs/2026-08-23T21_45_07_372Z-eresolve-report.txt
+22:45:12.676 
+npm error A complete log of this run can be found in: /vercel/.npm/_logs/2026-08-23T21_45_07_372Z-debug-0.log
+22:45:12.710 
+Error: Command "npm install" exited with 1### Fluid
 
 200 MB
 
