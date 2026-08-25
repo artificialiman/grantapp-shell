@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { client } from '$lib/supabase';
-	import { goto } from '$app/navigation';
 	import { generateOrRetrieveDeviceTag } from '$lib/auth/deviceTag';
 	import type { PageData } from './$types';
 
@@ -50,8 +49,16 @@
 			const bindData = (await bindResponse.json()) as { subscription_active?: boolean };
 
 			// Route premium subscribers straight to their papers; everyone
-			// else lands on the homepage as before.
-			await goto(bindData.subscription_active ? '/premium' : '/');
+			// else lands on the homepage as before. A hard navigation
+			// (window.location.href), not goto() -- goto() is a client-side
+			// SvelteKit navigation, and /premium's server-side gate reads
+			// the session from the request's cookies on the very next
+			// request. If that client-side nav fires before the
+			// just-set session cookie is guaranteed flushed/visible, the
+			// gate can silently redirect back to /login with no visible
+			// error -- exactly the "nothing happens" symptom this fixes.
+			// A hard navigation forces a genuinely fresh HTTP request.
+			window.location.href = bindData.subscription_active ? '/premium' : '/';
 		} catch (err) {
 			error = (err as Error).message || 'An error occurred';
 		}
