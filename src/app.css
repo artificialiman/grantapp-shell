@@ -633,22 +633,26 @@ nav.nav-dashboard .brand { font-size: 1.1rem; }
 }
 .ec-arrow { color: var(--accent); font-size: 0.95rem; }
 
-/* ── Notes / callout card ── */
+/* ── Notes / callout card ──
+   No accent border-strip, no glow-on-hover — both read as the same
+   generic "card with a colored edge" template this app has moved away
+   from elsewhere (see the exam-launch redesign). Hover here is a quiet
+   background-tint shift instead; the icon and arrow carry the accent
+   color so the card doesn't need a colored edge to signal what it is. */
 .notes-card {
 	background: var(--surface);
 	border: 1px solid var(--border);
-	border-left: 3px solid var(--accent);
 	border-radius: var(--radius-card);
 	padding: 1.5rem;
 	display: flex;
 	align-items: center;
 	gap: 1.25rem;
-	transition: box-shadow 0.2s;
+	transition: background 0.2s ease, border-color 0.2s ease;
 	text-decoration: none;
 	color: var(--text);
 }
-.notes-card:hover { box-shadow: 0 0 20px var(--accent-glow); }
-.notes-icon { font-size: 2rem; flex-shrink: 0; line-height: 1; }
+.notes-card:hover { background: var(--surface-2); border-color: var(--border-2); }
+.notes-icon { font-size: 2rem; flex-shrink: 0; line-height: 1; color: var(--accent); }
 .notes-info { flex: 1; }
 .notes-label { font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 0.25rem; }
 .notes-title { font-family: var(--font-display); font-size: 1rem; font-weight: 700; margin-bottom: 0.2rem; }
