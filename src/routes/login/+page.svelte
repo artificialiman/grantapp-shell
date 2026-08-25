@@ -47,8 +47,15 @@
 				return;
 			}
 
-			// Success!
-			await goto('/');
+			// Route premium subscribers straight to their papers; everyone
+			// else lands on the homepage as before.
+			const { data: student } = await client
+				.from('students')
+				.select('subscription_active')
+				.eq('id', signInData.user.id)
+				.single();
+
+			await goto(student?.subscription_active ? '/premium' : '/');
 		} catch (err) {
 			error = (err as Error).message || 'An error occurred';
 		}
