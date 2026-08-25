@@ -87,6 +87,7 @@
 
 	function handleSubmit(e: Event) {
 		e.preventDefault();
+		if (loading) return; // guards against double-submit via Enter/rapid clicks racing the disabled state
 		if (showSignUp) {
 			handleSignUp();
 		} else {
