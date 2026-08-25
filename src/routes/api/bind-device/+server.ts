@@ -32,6 +32,22 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		const adminClient = createClient(supabaseUrl, SERVICE_ROLE_KEY);
 
+		// Fetch subscription status alongside the bind check — the login
+		// page uses this to route premium subscribers straight to
+		// /premium. Doing this here (service_role, already-authenticated
+		// request) instead of as a second client-side query after sign-in
+		// avoids a real race: a client-side query run immediately after
+		// signInWithPassword() can fire before the browser's session is
+		// fully established, so an RLS-gated `auth.uid() = id` check can
+		// silently return no row and fall through to the non-premium path
+		// even for an active subscriber.
+		const { data: studentRow } = await adminClient
+			.from('students')
+			.select('subscription_active')
+			.eq('id', user.id)
+			.single();
+		const subscriptionActive = studentRow?.subscription_active ?? false;
+
 		// Check existing binding
 		const { data: existing, error: checkError } = await adminClient
 			.from('device_bindings')
@@ -59,7 +75,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				return json({ message: 'Failed to bind device' }, { status: 500 });
 			}
 
-			return json({ message: 'Device bound successfully' }, { status: 200 });
+			return json({ message: 'Device bound successfully', subscription_active: subscriptionActive }, { status: 200 });
 		}
 
 		// Existing binding with same tag - update last_seen_at
@@ -74,7 +90,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				return json({ message: 'Failed to update device' }, { status: 500 });
 			}
 
-			return json({ message: 'Device updated successfully' }, { status: 200 });
+			return json({ message: 'Device updated successfully', subscription_active: subscriptionActive }, { status: 200 });
 		}
 
 		// Existing binding with different tag - HARD LOCK (reject)
