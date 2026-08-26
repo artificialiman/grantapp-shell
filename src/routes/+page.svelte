@@ -44,25 +44,23 @@
 	/>
 </section>
 
-{#if data.user}
-	<div class="wrap">
-		<a href={data.student?.subscription_active ? '/premium' : '/login'} class="notes-card">
-			<div class="notes-icon">⭐</div>
-			<div class="notes-info">
-				<div class="notes-label">Premium</div>
-				<div class="notes-title">
-					{data.student?.subscription_active ? 'You have premium access' : 'Unlock premium papers'}
-				</div>
-				<div class="notes-sub">
-					{data.student?.subscription_active
-						? 'View your premium papers and mock exams'
-						: 'Full past papers, no negative marking, offline-ready'}
-				</div>
+<div class="wrap">
+	<a href="/premium" class="notes-card">
+		<div class="notes-icon">⭐</div>
+		<div class="notes-info">
+			<div class="notes-label">Premium</div>
+			<div class="notes-title">
+				{data.student?.subscription_active ? 'You have premium access' : 'Unlock premium papers'}
 			</div>
-			<div class="notes-arrow">→</div>
-		</a>
-	</div>
-{/if}
+			<div class="notes-sub">
+				{data.student?.subscription_active
+					? 'View your premium papers and mock exams'
+					: 'Full past papers, no negative marking, offline-ready'}
+			</div>
+		</div>
+		<div class="notes-arrow">→</div>
+	</a>
+</div>
 
 <style>
 	.wrap {

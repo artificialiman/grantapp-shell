@@ -1,8 +1,17 @@
 import { createServerClient } from '@supabase/ssr';
 import type { Handle } from '@sveltejs/kit';
+import { env } from '$env/dynamic/private';
 
-const supabaseUrl = process.env.VITE_SUPABASE_URL as string;
-const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY as string;
+/**
+ * $env/dynamic/private, not process.env directly. adapter-auto can
+ * resolve to a non-Node runtime at deploy time (Cloudflare, other edge
+ * targets) where process.env either doesn't exist or isn't populated
+ * the way it is under Node -- $env/dynamic/private is SvelteKit's
+ * portable abstraction over "wherever these actually live" and works
+ * the same regardless of which adapter ends up in play.
+ */
+const supabaseUrl = env.VITE_SUPABASE_URL as string;
+const supabaseAnonKey = env.VITE_SUPABASE_ANON_KEY as string;
 
 /**
  * Creates a request-scoped Supabase client bound to THIS request's

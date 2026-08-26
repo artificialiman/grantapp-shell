@@ -3,18 +3,29 @@ import type { PageServerLoad } from './$types';
 
 const TOTAL_PAPERS = 10;
 
+/**
+ * `session` can now be null here -- the parent layout gate is softened
+ * (see premium/+layout.server.ts) and no longer guarantees a session
+ * before this load runs. Previously `session.user.id` was used
+ * unconditionally, which would throw the moment an anonymous visitor
+ * reached this page. Guarded below: no session just means no personal
+ * progress to attach, not a crash.
+ */
 export const load: PageServerLoad = async ({ parent, locals }) => {
 	const { student, session } = await parent();
 
-	const { data: rows } = await locals.supabase
-		.from('paper_progress')
-		.select('subject, status')
-		.eq('student_id', session.user.id);
-
 	const completedBySubject = new Map<string, number>();
-	for (const row of rows ?? []) {
-		if (row.status === 'completed') {
-			completedBySubject.set(row.subject, (completedBySubject.get(row.subject) ?? 0) + 1);
+
+	if (session?.user?.id) {
+		const { data: rows } = await locals.supabase
+			.from('paper_progress')
+			.select('subject, status')
+			.eq('student_id', session.user.id);
+
+		for (const row of rows ?? []) {
+			if (row.status === 'completed') {
+				completedBySubject.set(row.subject, (completedBySubject.get(row.subject) ?? 0) + 1);
+			}
 		}
 	}
 
